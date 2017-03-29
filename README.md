@@ -1,6 +1,6 @@
 本文是对[kanaka/mal](https://github.com/kanaka/mal)这个项目中[指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md)的中文翻译。这份指南教你如何用某种编程语言实现一个Lisp解释器，步骤清晰简明，十分适合新手学习。
 
-This article is a Simplified Chinese translation of the guide part of  [kanaka/mal](https://github.com/kanaka/mal) project under [Mozilla Public License 2.0](https://github.com/kanaka/mal/blob/master/LICENSE)
+This article is a Simplified Chinese translation of [kanaka/mal](https://github.com/kanaka/mal) project's the guide under [Mozilla Public License 2.0](https://github.com/kanaka/mal/blob/master/LICENSE)
 
 ---
 
@@ -17,7 +17,7 @@ Make-A-Lisp 这个项目的目标是让你更容易地实现你自己的Lisp解�
 - [通用的提示](#general-hints)
 - [Make-A-Lisp的步骤](#the-make-a-lisp-process-1)
   - [步骤 0: The REPL](#step-0-the-repl)
-  - [步骤 1: 读取与打印](#step-1-read-and-print)
+  - [步骤 1: Read and Print](#step-1-read-and-print)
   - [步骤 2: 执行](#step-2-eval)
   - [步骤 3: 环境](#step-3-environments)
   - [步骤 4: If Fn Do](#step-4-if-fn-do)
@@ -115,7 +115,7 @@ StackOverflow和Google是你的好伙伴。如今的多语言开发者不会记�
 
 不要让你自己陷入特定的难题中。由于make-a-lisp过程是由一系列的步骤所构成的，实际上构建一个lisp解释器的过程更像一棵有很多分叉的树。如果你卡在了尾调用优化，或者哈希表上时，就去做一些其他的部分。当你在做其他功能的时候，会经常突然得到解决问题的灵感。我力求清晰地组织这份指南和测试，以便某些问题的可以拖延一阵再解决。
 
-对于“可推迟/可选”的说明: 当你运行某个步骤的测试的时候，最后的一些测试可能会有"optional"（可选）的标记。这表示这些测试的功能对于基础的mal实现不是必须的。这份指南中的很多步骤有个“可推迟”(deferrable)小节，它们并不是相同的意思。这些小节中包括了被标记为"optional"的测试，但也包括了对于后面步骤中所必要的功能。换句话讲，这是“实现你自己的Lisp的一场冒险”。
+对于“可推迟/可选”的说明: 当你运行某个步骤的测试的时候，最后的一些测试可能会有"optional"（可选的任务）的标记。这表示这些测试的功能对于基础的mal实现不是必须的。这份指南中的很多步骤有个“可推迟的ren w”(deferrable)小节，它们并不是相同的意思。这些小节中包括了被标记为"optional"的测试，但也包括了对于后面步骤中所必要的功能。换句话讲，这是“实现你自己的Lisp的一场冒险”。
 
 使用测试驱动开发，make-a-lisp过程的每个步骤都有一组与之相关的测试，在过程中也会有用来运行特定步骤所有测试的脚本。找出一个失败的测试，修复它，重新测试，直到那个步骤中所有测试都能通过为止。
 
@@ -149,14 +149,14 @@ make "test^quux^step0"
 
 恭喜你！你已经完成了make-a-lisp的第一个步骤。
 
-#### 可选：
+#### 可选的任务：
 * 为你的解释器的REPL增加整行编辑和命令历史功能。许多语言已经提供了支持行编辑的库/模块。另外一个选项是，如果你用的语言支持用FFI (foreign function interface外来函数接口)来直接加载调用GNU readline, editline或linenoise库。将行编辑接口代码写在`readline.qx`文件中。
 
 <a name='step-1-read-and-print'></a>
-### 步骤 1: 读取和打印
+### 步骤 1: Read and Print
 ![step1_read_print](/content/images/2017/03/step1_read_print.png)
 
-这个步骤中，你需要让你的解释器“读取”用户输入的字符串，并把它解析为一种内部的树形数据结构（AST，抽象语法树），然后将这个数据结构“打印”成字符串。
+这个步骤中，你需要让你的解释器“读取”(read)用户输入的字符串，并把它解析为一种内部的树形数据结构（AST，抽象语法树），然后将这个数据结构“打印”(print)成字符串。
 
 在非lisp类语言中，这个步骤（叫作“词法分析和语法分析”）将会是编译器/解释器中最复杂的部分之一。而在Lisp中，你想要的这种数据的结构与程序员写的代码的结构基本上是一致的（Homoiconicity，同像性）。
 
@@ -226,3 +226,14 @@ make "test^quux^step1"
 修复所有与symbol, number和list有关的失败测试。
 
 你现在已经完成了最困难的步骤之一。#tbd 剩下的步骤可能更简单，并且每个步骤会逐渐让你有更多的收获。
+
+
+#### 可推迟的任务:
+* 为你的reader和printer函数增加其他的基础类型的支持: string, nil, true, and false. 这些类型在步骤4的时候就是必需的了。在读取一个字符串之后，要进行下列的转换：一个反斜杠后面跟着双引号的时候`\"`，需要把它们翻译为一个普通的双引号`"`，反斜杠后跟着n的时候`\n`需要翻译为换行，一个反斜杠后面跟着另一个双引号的时候`\\`，需要把它们翻译为一个单引号`\`。为了能正确的打印字符串（#tbd），`pr_str`函数需要另一个叫作`print_readably`的参数。当这个参数为true的时候，双引号、换行符和反斜杠会被翻译为它们被打印出来的表现形式（与reader的逻辑正好相反）。主程序中的`PRINT`函数应该在调用`pr_str`时将print_readably设置为true。
+* 为reader函数增加更多的错误检查，确保括号都能够正确匹配。在主循环中捕获并打印这些错误信息。如果你的语言中没有try/catch风格的冒泡式异常处理功能，那么你需要在代码中加上一个显式的异常处理，并且跳过错误，不要让程序崩溃掉。
+* 为reader加上macros支持。这能够在读取阶段时将某些形式转换为其他形式。在`tests/step1_read_print.mal`中可以找到需要支持哪种macros的形式（它们只是对token流的简单转换）
+* 支持其他几种mal数据类型: keyword, vector, hash-map.
+  * keyword(关键字): keyword是由冒号开头的token。keyword只能存储为有特殊unicode前缀的字符串，像0x29E (或字符 0xff/127, 如果目标语言没有很好的unicode支持的话) printer会把带这个前缀的字符串转换回keyword表示。这能够让在大多数语言中使用keyword作为哈希表的key变得很容易。你也可以将keyword存储为一种唯一数据类型，但你要确定它们可以作为哈希表的key使用（#tbd）。
+  * vector(向量): vector可以被实现为#tbd。你可以通过在开头和结尾的token上加上参数，从而做到使用同一个reader函数操作list和vector的功能。
+  * hash-map(哈希表): 哈希表是一种关系型数据结构，它将字符串映射到其他mal类型的值上。如果你将keyword实现为带前缀的的字符串，那么你只需要一种原生的关系数据结构，只要它支持以字符串作为key就可以了。Clojure支持把任何值作为哈希表的key，但在mal的基础功能中只需要支持把字符串作为key即可。因为将hash-map表示为key和value的交替序列，你可能可以用读取list和vector的reader函数来处理hash-map，只需要用参数来标示它的开头和结尾token即可。奇数位置的token作为key，而偶数位置的token作为value。
+* 为你的reader增加对注释的支持。tokenizer应该忽略由";"开头的token。你的`reader_str`函数需要正确的处理tokenizer不返回任何值的情况。最简单的办法是返回`nil`这个mal类型的值。一个更加简明的（在这种情况下不打印nil）方式是抛出一个特殊的异常，使主循环直接在循环的开头跳过循环，从而不调用rep。
