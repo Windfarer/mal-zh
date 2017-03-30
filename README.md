@@ -15,7 +15,7 @@ Make-A-Lisp 这个项目的目标是让你更容易地实现你自己的Lisp解�
 - [选择一种语言](#pick-a-language)
 - [开始](#getting-started)
 - [通用的提示](#general-hints)
-- [Make-A-Lisp的步骤](#the-make-a-lisp-process-1)
+- [Make-A-Lisp的流程](#the-make-a-lisp-process-1)
   - [步骤 0: The REPL](#step-0-the-repl)
   - [步骤 1: Read and Print](#step-1-read-and-print)
   - [步骤 2: 执行](#step-2-eval)
@@ -126,7 +126,7 @@ StackOverflow和Google是你的好伙伴。如今的多语言开发者不会记�
 当你彻底被某个步骤卡住了，并且有了想放弃的念头，那么你应该“作个小弊”，参考一下已经存在的语言的实现对于当前步骤或功能的代码。因为你是来学习的，不是来考试的，所以不要有太强的负罪感。好吧，你最好还是能稍微认识到，这种行为不太好。
 
 <a name='the-make-a-lisp-process-1'></a>
-## Make-A-Lisp过程
+## Make-A-Lisp的流程
 以下步骤的目标语言叫作"quux"，文件名后缀是"qx"
 
 <a name='step-0-the-repl'></a>
@@ -237,3 +237,62 @@ make "test^quux^step1"
   * vector(向量): vector可以被实现为#tbd。你可以通过在开头和结尾的token上加上参数，从而做到使用同一个reader函数操作list和vector的功能。
   * hash-map(哈希表): 哈希表是一种关系型数据结构，它将字符串映射到其他mal类型的值上。如果你将keyword实现为带前缀的的字符串，那么你只需要一种原生的关系数据结构，只要它支持以字符串作为key就可以了。Clojure支持把任何值作为哈希表的key，但在mal的基础功能中只需要支持把字符串作为key即可。因为将hash-map表示为key和value的交替序列，你可能可以用读取list和vector的reader函数来处理hash-map，只需要用参数来标示它的开头和结尾token即可。奇数位置的token作为key，而偶数位置的token作为value。
 * 为你的reader增加对注释的支持。tokenizer应该忽略由";"开头的token。你的`reader_str`函数需要正确的处理tokenizer不返回任何值的情况。最简单的办法是返回`nil`这个mal类型的值。一个更加简明的（在这种情况下不打印nil）方式是抛出一个特殊的异常，使主循环直接在循环的开头跳过循环，从而不调用rep。
+
+### 步骤 2: Eval
+![step2_eval](/content/images/2017/03/step2_eval.png)
+
+在步骤1中，你的mal解释器基本上只有验证输入然后去除输出结果中多余空格的功能。在本步骤中，你将会为你的解释器增加evaluator (EVAL)的功能，从而把它改成一个简单的计算器。
+
+比较步骤1和步骤2的伪代码，可以对本步骤中将要做的修改有简要的了解：
+
+```
+diff -urp ../process/step1_read_print.txt ../process/step2_eval.txt
+```
+
+* 将`step1_read_print.qx`复制为`step2_eval.qx`
+* 定义一个简单的初始化REPL环境。这个环境是一个关联数据结构，将symbol (或symbol names) 映射为数学运算函数。例如，在python中，这个环境应该看起来是这个样子的：
+
+```
+repl_env = {'+': lambda a,b: a+b,
+            '-': lambda a,b: a-b,
+            '*': lambda a,b: a*b,
+            '/': lambda a,b: int(a/b)}
+```
+
+* 修改`rep`函数，将这个REPL环境作为调用`EVAL`函数时的第二个参数。
+* 创建一个新函数`eval_ast`，它将接受`ast`(mal数据类型)和一个关系数据结构（上文中的环境）`eval_ast`对于`ast`类型进行下列情况匹配并做相应处理：
+  * symbol: 在环境结构中查找symbol，返回对应的value，或在value不存在时报错
+  * list: 返回对于list中的每个元素`EVAL`调用得到的结果所组成的list
+  * 否则直接返回原`ast`值
+* 修改`EVAL`函数，检查它的第一个参数`ast`是不是一个list。
+  * `ast`不是list: 返回对它调用`eval_ast`得到的结果
+  * `ast`是一个空的list: 原封不动地返回ast
+  * `ast`是一个list: 调用`eval_ast`得到一个新的执行过的list #tbd 
+
+如果你的目标语言不支持可变长度参数（例如，variadic, vararg, splats, apply），那么你需要将整个参数的列表作为一个单独的参数，然后在每个mal函数中再将它切分为一个个独立的值。这样做虽然比较闹心，但还是可以凑合用的。
+
+对于一个list
+
+用这些表达式来进行测试：
+
+* `(+ 2 3)` -> `5`
+* `(+ 2 (* 3 4))` -> `14`
+
+你最可能遇到的挑战是，如何使用一个参数列表#tbd
+
+现在，回到顶层目录，执行步骤2的测试，并修复错误。
+
+```
+make "test^quux^step2"
+```
+
+现在你有了一个简单的前缀表达式计算器了。
+
+可推迟的任务：
+
+* `eval_ast`应该#tbd vector和hash-map。在`eval_ast`函数中加入下列情况：
+  * 如果`ast`是一个vector: 返回对于vector中的每个元素`EVAL`调用得到的结果所组成的vector
+  * 如果`ast`是一个hash-map: 返回一个新的hash-map，它的key是从原hash-map中来的key，value是对于原hash中的value调用`EVAL`得到的结果。
+
+
+
