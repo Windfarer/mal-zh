@@ -130,7 +130,7 @@ StackOverflow和Google是你的好伙伴。如今的多语言开发者不会记�
 以下步骤的目标语言叫作"quux"，文件名后缀是"qx"
 
 <a name='step-0-the-repl'></a>
-### 步骤0: The REPL
+### 步骤0: The REPL 读取求值打印循环(Read-Eval-Print Loop)
 ![step0_repl](/content/images/2017/03/step0_repl.png)
 
 这个步骤基本上只是创建了你解释器的框架。
@@ -153,7 +153,7 @@ make "test^quux^step0"
 * 为你的解释器的REPL增加整行编辑和命令历史功能。许多语言已经提供了支持行编辑的库/模块。另外一个选项是，如果你用的语言支持用FFI (foreign function interface外来函数接口)来直接加载调用GNU readline, editline或linenoise库。将行编辑接口代码写在`readline.qx`文件中。
 
 <a name='step-1-read-and-print'></a>
-### 步骤 1: Read and Print
+### 步骤 1: Read and Print 读取和打印
 ![step1_read_print](/content/images/2017/03/step1_read_print.png)
 
 这个步骤中，你需要让你的解释器“读取”(read)用户输入的字符串，并把它解析为一种内部的树形数据结构（AST，抽象语法树），然后将这个数据结构“打印”(print)成字符串。
@@ -238,7 +238,7 @@ make "test^quux^step1"
   * hash-map(哈希表): 哈希表是一种关系型数据结构，它将字符串映射到其他mal类型的值上。如果你将keyword实现为带前缀的的字符串，那么你只需要一种原生的关系数据结构，只要它支持以字符串作为key就可以了。Clojure支持把任何值作为哈希表的key，但在mal的基础功能中只需要支持把字符串作为key即可。因为将hash-map表示为key和value的交替序列，你可能可以用读取list和vector的reader函数来处理hash-map，只需要用参数来标示它的开头和结尾token即可。奇数位置的token作为key，而偶数位置的token作为value。
 * 为你的reader增加对注释的支持。tokenizer应该忽略由";"开头的token。你的`reader_str`函数需要正确的处理tokenizer不返回任何值的情况。最简单的办法是返回`nil`这个mal类型的值。一个更加简明的（在这种情况下不打印nil）方式是抛出一个特殊的异常，使主循环直接在循环的开头跳过循环，从而不调用rep。
 
-### 步骤 2: Eval
+### 步骤 2: Eval 求值
 ![step2_eval](/content/images/2017/03/step2_eval.png)
 
 在步骤1中，你的mal解释器基本上只有验证输入然后去除输出结果中多余空格的功能。在本步骤中，你将会为你的解释器增加evaluator (EVAL)的功能，从而把它改成一个简单的计算器。
@@ -271,7 +271,7 @@ repl_env = {'+': lambda a,b: a+b,
 
 如果你的目标语言不支持可变长度参数（例如，variadic, vararg, splats, apply），那么你需要将整个参数的列表作为一个单独的参数，然后在每个mal函数中再将它切分为一个个独立的值。这样做虽然比较闹心，但还是可以凑合用的。
 
-对于一个list
+对于一个list#tbd
 
 用这些表达式来进行测试：
 
@@ -294,5 +294,46 @@ make "test^quux^step2"
   * 如果`ast`是一个vector: 返回对于vector中的每个元素`EVAL`调用得到的结果所组成的vector
   * 如果`ast`是一个hash-map: 返回一个新的hash-map，它的key是从原hash-map中来的key，value是对于原hash中的value调用`EVAL`得到的结果。
 
+### 步骤 3: Environments 环境
+![step3_env](/content/images/2017/03/step3_env.png)
 
+在步骤2中我们已经实现了REPL环境(`repl_env`)，在这个环境中可以存储和查找基本的算数运算函数。在本步骤中，你将会为解释器增加创建新环境(`let*`)和修改已存在的环境(`def!`)的功能。
+
+Lisp的环境是一个关系数据结构，它将symbol(即key)映射到value上。但是Lisp环境还有一个很重要的额外功能：它们可以引用refer另一个环境(外层的环境)。在环境中进行查找时，如果当前环境中没有要找的symbol，那么将在外层环境中继续查找，持续进行这个过程，直到找到symbol，或者外层的环境是`nil`(在整个链中的最外层)
+
+比较步骤2和步骤3的伪代码，可以对本步骤中将要做的修改有简要的了解：
+
+```
+diff -urp ../process/step2_eval.txt ../process/step3_env.txt
+```
+
+* 将`step2_eval.qx`复制为`step3_env.qx`
+* 创建`env.qx`，在里面写和环境有关的定义
+* 定义一个`Env`对象，它有一个关系型数据结构的属性`data`，并且在实例化的时候需要一个`outer`参数
+* 为Env对象定义下列三个方法：
+  * set: 接受一个symbol作为key，一个mal类型对象作为value，并将它们装入`data`结构中 
+  * find: 接受一个symbol的key参数，如果当前环境中找到了这个key，那么返回环境。如果没有找到，并且外层环境不是`nil`，那么在外层环境中（递归）调用find
+  * get: 接受一个symbol的key参数，并且用`find`方法来找到这个key对应的环境，并且返回匹配到的value。如果没有在外层环境的链中没有找到这个key，则抛出一个"not found"（未找到）错误
+* 更新`step3_env.qx`，使用新的Env类型来创建repl_env(它的outer参数设置为nil)，并且使用`set`方法将算数运算函数加入到环境中
+* 修改`eval_ast`，对env参数调用`get`方法
+* 修改`EVAL`函数的apply的部分，对于list的第一个元素#tbd:
+  * symbol "def!": 调用当前环境（`EVAL`的第二个，名为`env`的参数）的set方法，使用未求值的第一个参数（list的第二个元素）作为symbol key，并且将已求值的第二个参数作为value
+  * symbol "let*": 以当前环境作为outer，创建一个新的环境，并将第一个参数作为列表#tbd。
+  * 否则: 对于list调用`eval_ast`，并将第一个元素应用到后面的#tbd
+
+`def!`和`let*`是Lisp中的特例（或叫“特殊atom原子”），意思是它们是语言级别的特性，比list剩下的元素（参数）更特别，#tbd（太长了= =）
+
+尝试一些简单的环境测试：
+
+* `(def! a 6)` `->` `6`
+* `a` `->` `6`
+* `(def! b (+ a 2))` `->` `8`
+* `(+ a b)` `->` `14`
+* `(let* (c 2) c)` `->` `2`
+
+回到目录的最顶层，运行步骤3的测试，并修复错误。
+
+```
+make "test^quux^step3"
+```
 
