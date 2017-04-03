@@ -1,6 +1,8 @@
-本文是对[kanaka/mal](https://github.com/kanaka/mal)这个项目中[指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md)的中文翻译。这份指南教你如何用某种编程语言实现一个Lisp解释器，步骤清晰简明，十分适合新手学习。
+本文是对[kanaka/mal](https://github.com/kanaka/mal)这个项目中[指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md)的简体中文翻译。这份指南教你如何用某种编程语言实现一个Lisp解释器。请使用原项目 [kanaka/mal](https://github.com/kanaka/mal) 进行你的开发和学习等工作。
 
-This article is a Simplified Chinese translation of [kanaka/mal](https://github.com/kanaka/mal) project's the guide under [Mozilla Public License 2.0](https://github.com/kanaka/mal/blob/master/LICENSE)
+This project is a Simplified Chinese translation of [kanaka/mal](https://github.com/kanaka/mal) project's the guide. Take a look at 
+ the origin repository [kanaka/mal](https://github.com/kanaka/mal) to 
+get the full version of source code.
 
 ---
 
