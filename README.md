@@ -1,4 +1,4 @@
-本文是对[kanaka/mal](https://github.com/kanaka/mal)这个项目中[指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md)的简体中文翻译。这份指南教你如何用某种编程语言实现一个Lisp解释器。请使用原项目 [kanaka/mal](https://github.com/kanaka/mal) 进行你的开发和学习等工作。
+本项目是对[kanaka/mal](https://github.com/kanaka/mal)这个项目中[指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md)的简体中文翻译。这份指南教你如何用某种编程语言实现一个Lisp解释器。请使用原项目 [kanaka/mal](https://github.com/kanaka/mal) 进行你的开发和学习等工作。
 
 This project is a Simplified Chinese translation of [kanaka/mal](https://github.com/kanaka/mal) project's the guide. Take a look at 
  the origin repository [kanaka/mal](https://github.com/kanaka/mal) to 
@@ -435,6 +435,42 @@ make "test^quux^step5"
 看一下步骤5的测试文件`tests/step5_tco.mal`。函数`sum-to`不能被尾调用优化，因为它在递归调用之后又做了一些事情（`sum-to`调用了它自身，之后执行了相加的操作）Lisp用户说`sum-to`并没有在尾部调用。函数`sum2`在尾部调用了自己。换句话说，对`sum2`的递归调用是`sum2`最后一步做的事情。对于一个非常大的值调用`sum-to`将在大多数目标语言中导致栈溢出异常。（某些语言使用了非常特殊的技巧来避免栈溢出）
 
 祝贺你，你的mal实现已经有了大多数主流语言所缺少的（尾调用优化）特性。
+
+步骤6: Files, Mutation, and Evil
+![step6_file](/content/images/2017/04/step6_file.png)
+
+在步骤5中，你为解释器加入了尾调用优化。在本步骤中你将加入一些字符串和文件操作，为你的实现增加一些evil，呃eval（#tbd）。只要你的语言支持函数闭包，那么本步骤将非常容器。然而，为了完成本步骤，你必须实现字符串类型的支持，所以如果你之前如果推迟了任务还没完成，你需要回去先把那个搞定。
+
+比较步骤5和步骤6的伪代码，可以对本步骤中将要做的修改有简要的了解：
+
+```
+diff -urp ../process/step5_tco.txt ../process/step6_file.txt
+```
+
+* 将`step5_tco.qx`复制为`step6_file.qx`
+* 为核心命名空间增加两个新的字符串函数:
+  * `read-string`: 这个函数将reader中的`read_str`函数暴露了出来。如果你的mal字符串类型与你目标语言不一样（例如静态类型语言），那么你的`read-string`函数需要将原始字符串通过调用`read_str`函数，而从mal字符串类型中解包出来。
+  * `slurp`: 这个函数接受一个文件名（字符串）并并且将文件的内容作为字符串返回。和上面那个函数一样，如果你的mal字符串类型封装了目标语言的字符串，那么你需要将字符串参数解码来得到原始的文件名字符吃，并将结果编码(封装)回mal字符串类型。
+* 在你的主程序中，为你的REPL环境增加一个新的符号"eval"。这个符号对应的值是接受一个参数`ast`的函数。闭包，调用你的`EVAL`函数，以`ast`作为第一个参数，EVAL环境作为第二个参数（#TBD）。将调用`EVAL`的结果返回。这个简单且强大新功能允许你将mal数据作为mal程序对待。例如，你现在可以这样做：
+
+```
+(def! mal-prog (list + 1 2))
+(eval mal-prog)
+```
+
+* 使用mal语言自身，定义一个`load-file`函数，在你的主程序里调用`rep`函数，参数为"(def! load-file (fn* (f) (eval (read-string (str "(do " (slurp f) ")")))))"
+
+测试一下`load-file`:
+
+* `(load-file "../tests/incA.mal")` -> `9`
+* `(inc4 3)` -> `7`
+
+`load-file`函数做了如下的事情：
+
+* 调用`slurp`来通过文件名读取一个文件。将文件内容用"(do ...)"进行包裹，这样整个文件就可以作为一个单程序的AST（抽象语法树）。
+* 以`slurp`的返回值作为参数调用`read-string`函数。它使用reader读取/转换文件的内容，使之成为mal数据/AST.
+* 使用`eval`(在REPL环境中的那个)函数处理`read-string`函数返回的AST，“运行”它。
+
 
 
 
