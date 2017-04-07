@@ -496,3 +496,33 @@ make "test^quux^step6"
 
 ### 步骤 7: Quoting
 
+![step7_quote](/content/images/2017/04/step7_quote.png)
+
+在步骤7中，你将为解释器加上`quote`和`quasiquote`这两个特殊形式，并且加入`cons`和`concat`这两个核心函数的支持。
+
+特殊形式`quote`告诉求值器(`EVAL`)不要对参数进行求值。一开始，看起来这个功能没啥卵用，但能证明它有用的一个例子是，让mal程序能够有引用一个符号的自身，而不是它经过求值后的结果。比如列表。例如，考虑下列情况：
+
+* `(prn abc)`: 这段程序将在当前求值环境中寻找符号`abc`。并打印到屏幕上。如果`abc`没有被定义过的话，就会报错。
+* `(prn (quote abc))`: 这段程序会打印"abc"（打印符号本身）。它不会去管在当前环境中`abc`是否已被定义。
+* `(prn (1 2 3))`: 这段程序会报错，因为`1`不是函数，不能被应用于参数`(2 3)`上。
+* `(prn (quote (1 2 3)))`: 这段程序将打印"(1 2 3)"。
+* `(def! l (quote (1 2 3)))`: list quoting允许我们在代码中直接定义list(#tbd).另一个做这件事的方法是使用list函数`(def! l (list 1 2 3))`。
+
+第二种特殊形式是`quasiquote`。它允许一个quoted list能够有一些临时unquoted的元素(正常求值)。两种#tbd`unquote`和`splice-unquote`。#tbd最好的例子:
+
+* `(def! lst (quote (2 3)))` -> `(2 3)`
+* `(quasiquote (1 (unquote lst)))` -> `(1 (2 3))`
+* `(quasiquote (1 (splice-unquote lst)))` -> `(1 2 3)`
+
+`unquote`形式对它的参数进行#tbd，并将求值结果放入quasiquoted list。形式`splice-unquote`也将它的参数#tbd，但是被求值的值必须是列表，因为在后面它们会被切分(splice)到quasiquoted list中。在将它于macro一起使用的时候，quasiquote形式的真实力量才会展现出来(在下一步骤中)。
+
+比较步骤6和步骤7的伪代码，可以对本步骤中将要做的修改有简要的了解：
+
+```
+diff -urp ../process/step6_file.txt ../process/step7_quote.txt
+```
+
+* 将`step6_file.qx`复制为`step7_quote.qx`
+* 在实现这些quoting form时，你需要先在核心命名空间里实现一些支持函数:
+  * `cons`: 这个函数将它的第一个参数连接到它的第二个参数(一个列表)前面，返回一个新列表。
+  * `concat`: 这个函数接受零个或多个列表作为参数，并且返回由这些列表的所有参数组成的一个新列表。
