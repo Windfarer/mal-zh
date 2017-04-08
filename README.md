@@ -1,3 +1,5 @@
+本文的最新版本维护在 [Windfarer/mal-cn](https://github.com/kanaka/mal-cn)
+
 本项目是对[kanaka/mal](https://github.com/kanaka/mal)这个项目中[指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md)的简体中文翻译。这份指南教你如何用某种编程语言实现一个Lisp解释器。请使用原项目 [kanaka/mal](https://github.com/kanaka/mal) 进行你的开发和学习等工作。
 
 This project is a Simplified Chinese translation of [kanaka/mal](https://github.com/kanaka/mal) project's the guide. Take a look at 
@@ -526,3 +528,34 @@ diff -urp ../process/step6_file.txt ../process/step7_quote.txt
 * 在实现这些quoting form时，你需要先在核心命名空间里实现一些支持函数:
   * `cons`: 这个函数将它的第一个参数连接到它的第二个参数(一个列表)前面，返回一个新列表。
   * `concat`: 这个函数接受零个或多个列表作为参数，并且返回由这些列表的所有参数组成的一个新列表。
+
+关于不变可性: 注意cons和concat都没有修改它们的原始列表参数。所有对于它们的引用（换句话说，在其他列表中，它们可能作为其中的元素）将还指向原有的未变更的值。就像Clojure一样，mal是一种使用不可变数据结构的语言。我建议你去学习一下Clojure语言中实现的不可变性的能力和重要性，mal借用了它的大部分语法和特性。
+
+* 添加`quote`特殊形式，这个特殊形式返回它的参数（`ast`的第二个列表元素）
+
+* 添加`quasiquote`特殊形式。实现实现一个helper函数`is_pair`，它在参数是一个非空列表的时候返回true。然后定义`quasiquote`函数。#tbd`ast`参数的第一个参数（第二个列表元素），随后`ast`被设置为结果，并且回到循环的开头继续执行（TCO，尾调用优化）。`quasiquote`函数输入`ast`参数后，进行如下的条件判断：
+  1. 如果`is_pair`对于`ast`的判断结果是false: 返回一个新列表，里面包括了一个名为"quote"的符号，以及`ast`。
+  2. 否则，如果`ast`的第一个元素是符号"unquote": 返回`ast`的第二个元素。
+  3. 如果`is_pair`对于`ast`的判断结果是true，并且`ast`的第一个元素的第一个元素(即`ast[0][0]`)是名为"splice-unquote"的符号：返回一个新的列表，其中包含：名为"concat"的符号，`ast`的第一个元素的的第二个元素(即`ast[0][1]`)，以及以`ast`的第二个元素到最后一个元素为参数调用`quasiquote`的结果。
+  4. 否则: 返回一个新的列表，包括：名为"cons"的符号，以`ast`的第一个参数(即`ast[0]`)，和以`ast`的第二个元素到最后一个元素为参数调用`quasiquote`的结果。
+
+返回目录顶层，执行步骤7的测试。
+
+```
+make "test^quux^step7"
+```
+
+Quoting是mal中许多无聊的函数中的一个，但别因此而灰心。你的mal实现已接近完工了，而quoting为接下来的接近收工的步骤: macro，做好了准备。
+
+#### 可推迟的任务
+
+* quoting 形式的全名相当罗嗦。大多数Lisp语言有一个简写的语法，mal也不例外。这些简写语法被成为reader macros因为它们使我们能够在reader阶段中操作mal代码。在eval阶段中被执行的macro只是叫作macro，我们将在下一节中介绍。扩展reader的`read_form`函数的条件判断，增加下列情况:
+  * token是"'" (单引号): 返回一个新列表，包含符号"quote"，以及对下一个form读取的结果(`read_form`)
+  * token是"\`" (反引号): 返回一个新列表，包含符号"quasiquote"，以及对下一个form读取的结果(`read_form`)
+  * token是"~" (波浪号): 返回一个新列表，包含符号"unquote"，以及对下一个form读取的结果(`read_form`)
+  * token是"~@" (波浪号和at符号): 返回一个新列表，包含符号"splice-unquote"，以及对下一个form读取的结果(`read_form`)
+* 增加对vector的quoting的支持。`is_pair`函数在参数是非空列表或vector时应该返回true。`cons`应该也能接受vector作为第二个参数。返回值是list regardless。`concat`应该支持list，vector，或它们两者进行连接，结果永远是list。
+
+
+### Step 8: Macros 宏
+![step8_macros](/content/images/2017/04/step8_macros.png)
