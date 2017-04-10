@@ -557,7 +557,7 @@ Quoting是mal中许多无聊的函数中的一个，但别因此而灰心。你�
 * 增加对vector的quoting的支持。`is_pair`函数在参数是非空列表或vector时应该返回true。`cons`应该也能接受vector作为第二个参数。返回值是list regardless。`concat`应该支持list，vector，或它们两者进行连接，结果永远是list。
 
 
-### Step 8: Macros 宏
+### 步骤 8: Macros 宏
 ![step8_macros](/content/images/2017/04/step8_macros.png)
 
 现在，你的mal实现已经为加入最lisp范的、最一颗赛艇的编程概念——macro宏——做好了准备。在之前的步骤中，quoting能实现一些简单的数据结构操作，以及我们mal代码的一些操作（因为在步骤6中，我们的`eval`函数能够将mal数据结构转换为代码）。在本步骤中，你将实现将一个mal函数标记为macro的功能，它可以在求值之前操作mal代码。换句话说，macro就是用户自定义的特殊形式。从另一角度看，marco允许mal程序重新定义mal语言本身。
@@ -582,7 +582,7 @@ diff -urp ../process/step7_quote.txt ../process/step8_macros.txt
 ```
 make "test^quux^step8"
 ```
-#tbd,macro测试在一开始不会通过。尽管macro的实现非常简单，但调试macro的运行时bug非常的困难。如果你遇到了很难搞定的问题，我在这里给你一些建议：
+tbd,macro测试在一开始不会通过。尽管macro的实现非常简单，但调试macro的运行时bug非常的困难。如果你遇到了很难搞定的问题，我在这里给你一些建议：
 
 * 使用macroexpand特殊类型来排除indirection的一层（扩展但是跳过求值）。通常来说这能让我们找到问题的源头。
 * 在`eval`函数的最上面（在TCO循环中）增加一个debug print的语句，打印当前`ast`的值（提示：使用`pr_str`来获得便于debug的输出）。在其他语言的实现中找到步骤8的代码，并解除注释它的`eval`函数（是的，我允许你违反一次规则）。将两者同步执行，并进行对比。第一处不同的输出可能指示着bug的所在。
@@ -597,5 +597,26 @@ make "test^quux^step8"
   * `first`: 这个函数接受一个列表（或向量）作为参数，返回它的第一个元素，如果列表（或向量）是空的，或者参数本身是`nil`，则返回`nil`。
   * `rest`: 这个函数接受一个列表（或向量）作为参数，返回除第一个元素之外的所有元素。
 * 在主程序中，使用`rep`函数定义两个新的控制结构macro，下面是调用`rep`定义这些macro时用到的字符串参数:
-  * `cond`: `"(defmacro! cond (fn* (& xs) (if (> (count xs) 0) (list 'if (first xs) (if (> (count xs) 1) (nth xs 1) (throw "odd number of forms to cond")) (cons 'cond (rest (rest xs)))))))"`
-  * `or`: `"(defmacro! or (fn* (& xs) (if (empty? xs) nil (if (= 1 (count xs)) (first xs) `(let* (or_FIXME ~(first xs)) (if or_FIXME or_FIXME (or ~@(rest xs))))))))"`
+
+  * `cond`: "(defmacro! cond (fn* (& xs) (if (> (count xs) 0) (list 'if (first xs) (if (> (count xs) 1) (nth xs 1) (throw \"odd number of forms to cond\")) (cons 'cond (rest (rest xs)))))))"
+  * `or`: "(defmacro! or (fn* (& xs) (if (empty? xs) nil (if (= 1 (count xs)) (first xs) `(let* (or_FIXME ~(first xs)) (if or_FIXME or_FIXME (or ~@(rest xs))))))))"
+
+### 步骤 9: Try
+![step9_try](/content/images/2017/04/step9_try.png)
+
+在本步骤中，你要实现mal的最后一种特殊形式，用来进行异常处理的：try*/catch*. 你也需要为你的实现添加一些核心函数。特别是，你将会为你的实现增加apply和map核心函数，来加强它的函数式编程的血统。
+
+
+比较步骤8和步骤9的伪代码，可以对本步骤中将要做的修改有简要的了解：
+
+```
+diff -urp ../process/step8_macros.txt ../process/step9_try.txt
+```
+
+* 将`step8_macros.qx`复制为`step9_try.qx`
+* 为`EVAL`函数添加`try*/catch*`特殊形式。try catch形式看起来是这样的: `(try* A (catch* B C))` 对A进行求值，如果抛出了异常，那么在符号`B`绑定到抛出异常的值的环境中，对`C`进行求值。
+  * 如果你的目标语言有内建的try/catch风格的异常处理，那么你已经完成了90%的工作。增加一个(原生语言)try/catch程序块，在try部分中对`A`进行求值，并捕获所有异常。如果捕获到异常，则将异常翻译为一个mal类型/值。对于原生的异常，这可以是一个消息字符串或一个mal hash-map，其中包括了消息字符串和一些关于异常的其他异常。当一个通常的mal类型/值被当作异常，你可能需要将它报保存在原生的异常类型中，以便使用原生的try/catch机制对它进行处理。然后你要将mal类型/值从原生的异常中解出来。创建一个新的mal环境，在这个环境中，将`B`与异常的值绑定。最后，使用新的环境对`C`进行求值。
+  * 如果你的目标语言没有内建的try/catch风格的异常处理，那么你就有一些额外的工作要做了。最直接的做法之一是创建一个全局的错误变量，保存被抛出的mal类型/值。复杂之处在于，在许多地方你都必须检查这个全局错误状态是否已经被设置了，tbd。最佳的规则是，这个检查应该在你EVAL函数的最开始，以及每一个对EVAL的调用之后（tbd）是的，这样的做法非常不优雅，但是在一开始选择目标语言的时候，我已经警告过你了。
+* 添加`throw`核心函数
+
+
