@@ -197,7 +197,7 @@ make "test^quux^step0"
 * 对于每一个#tbd，将被解析为一个新的token
   * `[\s,]*`: 匹配任意个数的空格或逗号。它不是捕获对象，因此它会被忽略掉，不会被解析(not tokenized)
   * `~@`: 捕获两个特殊字符的组合`~@`，会被解析(tokenized)
-  * `[\[\]{}()'`~^@]`: 捕获`[]{}'`~^@`这些字符中任意一个，会被解析(tokenized)
+  * `[\[\]{}()'`~^@]`: 捕获`[]{}()'`~^@`这些字符中任意一个，会被解析(tokenized)
   * `"(?:\\.|[^\\"])*"`: 捕获由双引号开头，并到下一个双引号结束之间的内容，如果中间出现双引号，且双引号前面有反斜杠，则将它们也包括在捕获的内容中，直到下一个双引号。会被解析(tokenized)
   * `;.*`: 捕获由分号`;`开头的任意序列，会被解析(tokenized)
   * ```[^\s\[\]{}('"`,;)]*```: 捕获一系列由零个或更多个非特殊字符组成的序列(如，symbol, 数字, "true", "false" 以及 "nil")
@@ -618,5 +618,14 @@ diff -urp ../process/step8_macros.txt ../process/step9_try.txt
   * 如果你的目标语言有内建的try/catch风格的异常处理，那么你已经完成了90%的工作。增加一个(原生语言)try/catch程序块，在try部分中对`A`进行求值，并捕获所有异常。如果捕获到异常，则将异常翻译为一个mal类型/值。对于原生的异常，这可以是一个消息字符串或一个mal hash-map，其中包括了消息字符串和一些关于异常的其他异常。当一个通常的mal类型/值被当作异常，你可能需要将它报保存在原生的异常类型中，以便使用原生的try/catch机制对它进行处理。然后你要将mal类型/值从原生的异常中解出来。创建一个新的mal环境，在这个环境中，将`B`与异常的值绑定。最后，使用新的环境对`C`进行求值。
   * 如果你的目标语言没有内建的try/catch风格的异常处理，那么你就有一些额外的工作要做了。最直接的做法之一是创建一个全局的错误变量，保存被抛出的mal类型/值。复杂之处在于，在许多地方你都必须检查这个全局错误状态是否已经被设置了，tbd。最佳的规则是，这个检查应该在你EVAL函数的最开始，以及每一个对EVAL的调用之后（tbd）是的，这样的做法非常不优雅，但是在一开始选择目标语言的时候，我已经警告过你了。
 * 添加`throw`核心函数
+  * 如果你的目标语言支持try/catch风格的异常处理，那么本函数接受一个mal类型/值，并将它作为一个异常抛出。为了做到这一点，你可能需要创建包裹了mal对象/类型的自定义异常对象。
+  * 如果你的目标语言没有内建的try/catch风格的异常处理，则为这个mal对象/类型设置全局错误状态。
+* 增加`apply`和`map`核心函数。在步骤5中，如果你没有将原始函数`fn`加入到`fn*`返回的结构中，那么要先把它搞定。
+  * `apply`: 接受至少两个参数。第一个参数是一个函数，最后一个参数的是列表（或向量）。在函数和最后一个参数（如果有的话）之间的参数与最后一个参数连接起来，创建参数被用来调用函数。这个apply函数允许一个函数的参数被包含在一个列表（或）向量中。换句话说，`(apply F A B [C D])`就相当于`(F A B C D)`。  * `map`: 接受一个函数和一个列表，并对列表（或向量）中的每一个元素求值，并将结果返回为一个列表。
+* 添加一些断言函数。在Lisp中，断言是返回true或false（或true值/nil）
+Add some type predicates core functions. In Lisp, predicates are functions that return true/false (or true value/nil) and typically end in "?" or "p".
 
-
+nil?: takes a single argument and returns true (mal true value) if the argument is nil (mal nil value).
+true?: takes a single argument and returns true (mal true value) if the argument is a true value (mal true value).
+false?: takes a single argument and returns true (mal true value) if the argument is a false value (mal false value).
+symbol?: takes a single argument and returns true (mal true value) if the argument is a symbol (mal symbol value).
