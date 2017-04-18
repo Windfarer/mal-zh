@@ -366,7 +366,7 @@ diff -urp ../process/step3_env.txt ../process/step4_if_fn_do.txt
     * 创建一个新的环境，以env(#tbd)作为`outer`参数，第一个参数（即外层作用域的`ast`的第二个list元素）作为`binds`参数，闭包的参数作为`exprs`的参数。
     * 对于第二个参数（即外层作用域的`ast`的第三个list元素）调用`EVAL`，使用新的环境。将结果作为闭包的返回值。
 
-如果你的目标语言不支持闭包，那么你需要使用某种在关闭时可以保存值的结构或者对象保存如下的东西：`ast`list的第一个和第二个参数（函数参数列表和函数体），以及当前环境`env`。在这种情况下，你的原生函数需要用相同的方式被包裹。你可能也需要在`EVAL`的apply部分有一个用来调用对象/结构的函数/方法。
+如果你的目标语言不支持闭包，那么你需要使用某种在关闭时可以保存值的结构或者对象保存如下的东西：`ast`list的第一个和第二个参数（函数参数列表和函数体），以及当前环境`env`。在这种情况下，你的原生函数需要用相同的方式被封装。你可能也需要在`EVAL`的apply部分有一个用来调用对象/结构的函数/方法。
 
 测试你已经实现的基础部分：
 
@@ -469,7 +469,7 @@ diff -urp ../process/step5_tco.txt ../process/step6_file.txt
 
 `load-file`函数做了如下的事情：
 
-* 调用`slurp`来通过文件名读取一个文件。将文件内容用"(do ...)"进行包裹，这样整个文件就可以作为一个单程序的AST（抽象语法树）。
+* 调用`slurp`来通过文件名读取一个文件。将文件内容用"(do ...)"进行封装，这样整个文件就可以作为一个单程序的AST（抽象语法树）。
 * 以`slurp`的返回值作为参数调用`read-string`函数。它使用reader读取/转换文件的内容，使之成为mal数据/AST.
 * 使用`eval`(在REPL环境中的那个)函数处理`read-string`函数返回的AST，“运行”它。
 
@@ -618,14 +618,45 @@ diff -urp ../process/step8_macros.txt ../process/step9_try.txt
   * 如果你的目标语言有内建的try/catch风格的异常处理，那么你已经完成了90%的工作。增加一个(原生语言)try/catch程序块，在try部分中对`A`进行求值，并捕获所有异常。如果捕获到异常，则将异常翻译为一个mal类型/值。对于原生的异常，这可以是一个消息字符串或一个mal hash-map，其中包括了消息字符串和一些关于异常的其他异常。当一个通常的mal类型/值被当作异常，你可能需要将它报保存在原生的异常类型中，以便使用原生的try/catch机制对它进行处理。然后你要将mal类型/值从原生的异常中解出来。创建一个新的mal环境，在这个环境中，将`B`与异常的值绑定。最后，使用新的环境对`C`进行求值。
   * 如果你的目标语言没有内建的try/catch风格的异常处理，那么你就有一些额外的工作要做了。最直接的做法之一是创建一个全局的错误变量，保存被抛出的mal类型/值。复杂之处在于，在许多地方你都必须检查这个全局错误状态是否已经被设置了，tbd。最佳的规则是，这个检查应该在你EVAL函数的最开始，以及每一个对EVAL的调用之后（tbd）是的，这样的做法非常不优雅，但是在一开始选择目标语言的时候，我已经警告过你了。
 * 添加`throw`核心函数
-  * 如果你的目标语言支持try/catch风格的异常处理，那么本函数接受一个mal类型/值，并将它作为一个异常抛出。为了做到这一点，你可能需要创建包裹了mal对象/类型的自定义异常对象。
+  * 如果你的目标语言支持try/catch风格的异常处理，那么本函数接受一个mal类型/值，并将它作为一个异常抛出。为了做到这一点，你可能需要创建封装了mal对象/类型的自定义异常对象。
   * 如果你的目标语言没有内建的try/catch风格的异常处理，则为这个mal对象/类型设置全局错误状态。
 * 增加`apply`和`map`核心函数。在步骤5中，如果你没有将原始函数`fn`加入到`fn*`返回的结构中，那么要先把它搞定。
-  * `apply`: 接受至少两个参数。第一个参数是一个函数，最后一个参数的是列表（或向量）。在函数和最后一个参数（如果有的话）之间的参数与最后一个参数连接起来，创建参数被用来调用函数。这个apply函数允许一个函数的参数被包含在一个列表（或）向量中。换句话说，`(apply F A B [C D])`就相当于`(F A B C D)`。  * `map`: 接受一个函数和一个列表，并对列表（或向量）中的每一个元素求值，并将结果返回为一个列表。
-* 添加一些断言函数。在Lisp中，断言是返回true或false（或true值/nil）
-Add some type predicates core functions. In Lisp, predicates are functions that return true/false (or true value/nil) and typically end in "?" or "p".
+  * `apply`: 接受至少两个参数。第一个参数是一个函数，最后一个参数的是列表（或向量）。在函数和最后一个参数（如果有的话）之间的参数与最后一个参数连接起来，创建参数被用来调用函数。这个apply函数允许一个函数的参数被包含在一个列表（或）向量中。换句话说，`(apply F A B [C D])`就相当于`(F A B C D)`。  
+  * `map`: 接受一个函数和一个列表，并对列表（或向量）中的每一个元素求值，并将结果返回为一个列表。
+* 添加一些类型断言函数。在Lisp中，断言函数通常以以"?"或者"p"结尾，返回true或false（或true值/nil）。
+  * `nil?`: 接受一个参数，如果参数是nil(mal中的nil值)的话返回true(mal中的true值)。
+  * `true?`: 接受一个参数，如果参数是true(mal中的true值)的话，返回true(mal中的true值)。
+  * `false?`: 接受一个参数，如果参数是false(mal中的false值)的话，返回true(mal中的true值)。
+  * `symbol?`: 接受一个参数，如果参数是symbol(mal中的symbol)的话，返回true(mal中的true值)。
 
-nil?: takes a single argument and returns true (mal true value) if the argument is nil (mal nil value).
-true?: takes a single argument and returns true (mal true value) if the argument is a true value (mal true value).
-false?: takes a single argument and returns true (mal true value) if the argument is a false value (mal false value).
-symbol?: takes a single argument and returns true (mal true value) if the argument is a symbol (mal symbol value).
+现在回到顶层目录，运行步骤9的测试：
+
+```
+make "test^quux^step9"
+```
+你的mal实现现在大体上已经是一个功能完善的Lisp解释器了。但是如果你止步于此，就会错过创造一个mal实现中最激动人心和富有启发性的部分：self-hosting。
+
+#### 可推迟的任务
+* 增加如下新的核心函数:
+  * `symbol`: 接受一个字符串，返回以这个字符串作为名字的符号。
+  * `keyword`: 接受一个字符串，返回有相同name的keyword（tbd）这个函数也被用来判断参数是否已经是一个keyword，并返回它。
+  * `keyword?`: 接受一个参数，如果参数是keyword的话，返回true(mal中的true值)，否则返回false(mal中的false值)
+  * `vector`: 接受若干个参数，返回包含这些参数的一个vector。
+  * `vector?`: 接受一个参数，如果参数是vector的话，返回true(mal中的true值)，否则返回false(mal中的false值)
+  * `hash-map`: 接受偶数数量的参数，返回一个新的mal hash-map，其中key为奇数位置的参数，它们的value分别为与之对应的偶数位置的参数，它基本上是`{}`reader字面语法的函数形式。
+  * `map?`: 接受一个参数，如果参数是hash-map的话，返回true(mal中的true值)，否则返回false(mal中的false值)
+  * `assoc`: takes a hash-map as the first argument and the remaining
+    arguments are odd/even key/value pairs to "associate" (merge) into
+    the hash-map. Note that the original hash-map is unchanged
+    (remember, mal values are immutable), and a new hash-map
+    containing the old hash-maps key/values plus the merged key/value
+    arguments is returned.
+  * `dissoc`: takes a hash-map and a list of keys to remove from the
+    hash-map. Again, note that the original hash-map is unchanged and
+    a new hash-map with the keys removed is returned. Key arguments
+    that do not exist in the hash-map are ignored.
+  * `get`: 接受一个hash-map和一个key，返回hash-map中与这个key对应的value，如果hash-map中不存在这个key，则返回nil。
+  * `contains?`: 接受一个hash-map和一个key，如果hash-map中包含这个key，则返回true(mal中的true值)，否则返回false(mal中的false值)。
+  * `keys`: 接受一个hash-map，并返回一个list(mal中的list值)，其中包含了hash-map中的所有的key。
+  * `vals`: 接受一个hash-map，并返回一个list(mal中的list值)，其中包含了hash-map中的所有的value。
+  * `sequential?`: 接受一个参数，如果参数是list或者vector的话，返回true(mal中的true值)，否则返回false(mal中的false值)
