@@ -2,7 +2,7 @@
 
 本项目是对[kanaka/mal](https://github.com/kanaka/mal)这个项目中[指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md)的简体中文翻译。这份指南教你如何用某种编程语言实现一个Lisp解释器。请使用原项目 [kanaka/mal](https://github.com/kanaka/mal) 进行你的开发和学习等工作。
 
-This project is a Simplified Chinese translation of [kanaka/mal](https://github.com/kanaka/mal) project's the guide. Take a look at 
+This project is a Simplified Chinese translation of [kanaka/mal](https://github.com/kanaka/mal) project's guide. Take a look at 
  the origin repository [kanaka/mal](https://github.com/kanaka/mal) to 
 get the full version of source code.
 
