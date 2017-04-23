@@ -727,7 +727,14 @@ make MAL_IMPL=quux "test^mal"
 如果你想了解更多，请阅读这一篇[Peter Seibel's thorough discussion about gensym and leaking macros in Common Lisp](http://www.gigamonkeys.com/book/macros-defining-your-own.html#plugging-the-leaks)
 
 #### 可选的任务
-tbd
+* 为mal函数添加metadata支持，其他符合数据类型，以及原生函数。
+* 添加如下新的核心函数：
+  * `time-ms`: 不需要参数，返回从epoch(1970年1月1日 00:00:00 UTC)到当前时间之间的毫秒数。如果不能的话，就返回从某一特定时间点到当前时间之间的毫秒数。(`time-ms`通常被tbd使用，来计量持续时间。在实现`time-ms`之后，你可以运行`make perf^quux`来对你的mal实现进行性能benchmark。
+  * `conj`: 接受一个或更多元素的集合作为参数，返回包含原有集合中的元素以及新元素的集合。如果集合是一个list，则新元素以逆序插入到列表的前面并返回新list；如果集合是vector，则新元素被加入到给定的vector的尾部，并返回新vector。
+  * `string?`: 如果参数是一个字符串，返回true
+  * `seq`: 接受一个list, vector, string或者nil。如果传入的是空list，空vector或空字符串("")，则返回nil，否则，如果为list，则原样返回，如果是vector，则转换为list并返回；如果是字符串，则将字符串切分为单个字符的字符串列表并返回。
+* 为了实现对目标语言的互操作(interop)，添加如下核心函数:
+  * `quux-eval`: 接受一个字符串，在目标语言中进行求值，并将返回值转换为相应的mal类型并返回。你也可以添加一些其他你tbd的互操作函数；比如Clojure，有一个名为`.`的函数，允许调用Java的方法。如果目标语言是静态类型语言，尝试使用FFI或者一些因语言而异的反射机制。`quux-eval`和其他的互操作函数的测试应该添加到`quux/tests/stepA_mal.mal` 中。（例子请见[`lua-eval`的测试](https://github.com/kanaka/mal/blob/master/lua/tests/stepA_mal.mal)）
 
 ### TODO:
 
