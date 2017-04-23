@@ -660,3 +660,78 @@ make "test^quux^step9"
   * `keys`: 接受一个hash-map，并返回一个list(mal中的list值)，其中包含了hash-map中的所有的key。
   * `vals`: 接受一个hash-map，并返回一个list(mal中的list值)，其中包含了hash-map中的所有的value。
   * `sequential?`: 接受一个参数，如果参数是list或者vector的话，返回true(mal中的true值)，否则返回false(mal中的false值)
+
+### 步骤 A: Metadata, Self-hosting and Interop
+
+![stepA_mal](/content/images/2017/04/stepA_mal.png)
+
+现在你来到了实现mal的最后一个步骤。本步骤是对一些无法放入到其他步骤中的任务的一个集合。更重要的是，在本步骤你做的事情，将解锁名为"self-hosting"的神秘力量。你可能已经注意到，我们的诸多mal实现中其中一个，是用mal语言实现的。任何足够完善的mal实现都可以运行由mal语言实现的mal。tbd思考一会，如果你之前从未构建过一个编译器或是解释器。查看mal语言实现的mal的源码文件（因为你已经到了步骤A，所以这不算是作弊了）。
+
+如果你推迟了keywords，vectors和hash-map的实现，那么如果你想实现"self-host"的话，现在就需要先回去把这些任务完成。
+
+比较步骤8和步骤9的伪代码，可以对本步骤中将要做的修改有简要的了解：
+
+```
+diff -urp ../process/step9_try.txt ../process/stepA_mal.txt
+```
+
+* 将`step9_try.qx`复制为`stepA_mal.qx`
+* 添加`readline`核心函数。这个函数接受一个字符串，用来提示用户输入。用户输入的文本作为一个字符串返回。如果用户输入了EOF(通常是Ctrl-D)，则返回nil.
+* 为mal函数添加meta-data支持。TODO。需要与函数macro表示区分开。
+* 为你的REPL环境添加一个新的"\*host-language\*"(symbol)入口。这个入口的值包含了当前实现的名字。
+* 当REPL启动时（区别于使用脚本和参数调用启动时），调用`rep`函数，打印下列字符串启动信息: "(println (str "Mal [" \*host-language* "]"))"
+
+现在，回到目录顶层，运行步骤A的测试:
+
+```
+make "test^quux^stepA"
+```
+
+当你通过了步骤A的所有非可选测试，现在是尝试self-hosting的时候了。正常启动你步骤A的实现，但是使用你在步骤6中实现的文件参数模式来运行mal语言版本的实现。
+
+```
+./stepA_mal.qx ../mal/step1_read_print.mal
+./stepA_mal.qx ../mal/step2_eval.mal
+...
+./stepA_mal.qx ../mal/step9_try.mal
+./stepA_mal.qx ../mal/stepA_mal.mal
+```
+
+这是一个很好的机会，在你运行mal语言实现的mal时找到一些错误。在对self-hosting进行debug是非常困难的tbd。我自己找到的一个最好的方式是在mal实现的出错的步骤中添加prn语句（不是你自己的mal实现中）
+
+另一个我经常用的方式是，将mal实现中导致问题的代码拿出来，一步步简化这些代码，直到将它们简化为可以重现问题的最简代码片段。当这段代码足够精简时，你可能就知道你mal实现的问题出在哪了。请将你的精简复现代码加入到测试用例中，将来的实现者就可以在它们进行self-hosting之前就能避免问题，因为在这一步进行问题的定位和修复太困难了。
+
+一旦你可以手工运行所有的self-hosted步骤时，现在是在solf-hosted模式下运行所有测试的时候了。
+
+```
+make MAL_IMPL=quux "test^mal"
+```
+
+当你遇到问题时（你几乎肯定要遇到），使用上面说过的方式来进行debug。
+
+恭喜你！！！当所有测试通过后，你可以停下来并想想你已经完成了什么。你已经实现了一个Lisp解释器，它非常强大，并足够完整——可以运行一个大型的mal程序，而这个程序是mal语言实现的mal解释器。你可能tbd。
+
+#### 可选的任务: gensym
+
+我们在步骤8中加入的`or`macro有一个bug。它定义了一个名为`or_FIXME`的变量，它覆盖了用户代码中使用了这个macro。如果用户有一个变量叫`or_FIXME`，它就无法作为`or`macro的参数。为了修复这个问题，我们引入了`gensym`:这个函数返回一个在此前的程序中从未用到的symbol。tbd
+
+之前，你使用`rep`来定义`or`macro。移除这个定义，使用`rep`定义一个新的tbd，`gensym`函数和清真的`or`macro。下面是你需要传给`rep`的字符串参数:
+
+```
+"(def! *gensym-counter* (atom 0))"
+
+"(def! gensym (fn* [] (symbol (str \"G__\" (swap! *gensym-counter* (fn* [x] (+ 1 x)))))))"
+
+"(defmacro! or (fn* (& xs) (if (empty? xs) nil (if (= 1 (count xs)) (first xs) (let* (condvar (gensym)) `(let* (~condvar ~(first xs)) (if ~condvar ~condvar (or ~@(rest xs)))))))))"
+```
+如果你想了解更多，请阅读这一篇[Peter Seibel's thorough discussion about gensym and leaking macros in Common Lisp](http://www.gigamonkeys.com/book/macros-defining-your-own.html#plugging-the-leaks)
+
+#### 可选的任务
+tbd
+
+### TODO:
+
+* simplify: "X argument (list element Y)" -> ast[Y]
+* list of types with metadata: mal functions (required for self-hosting), list, vector, hash-map, native functions (optional for self-hosting).
+* more clarity about when to peek and poke in read_list and read_form
+* tokenizer: use first group rather than whole match (to eliminate whitespace/commas)
