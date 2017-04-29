@@ -1,7 +1,7 @@
 
 本项目是对 [kanaka/mal](https://github.com/kanaka/mal) 这个项目中 [指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md) 的简体中文翻译。这份指南教你如何用某种编程语言实现一个 Lisp 解释器。请使用原项目 [kanaka/mal](https://github.com/kanaka/mal) 进行你的开发和学习等工作。
 
-本译文的最新版本维护在 [Windfarer/mal-cn](https://github.com/kanaka/mal-cn)
+本译文的最新版本维护在 [Windfarer/mal-zh](https://github.com/kanaka/mal-zh)
 
 This project is a Simplified Chinese translation of [kanaka/mal](https://github.com/kanaka/mal) project's guide. Take a look at 
  the origin repository [kanaka/mal](https://github.com/kanaka/mal) to 
@@ -15,7 +15,7 @@ get the full version of source code.
 
 Make-A-Lisp 这个项目的目标是让你更容易地实现你自己的 Lisp 解释器，#tbd 在攀登 McCarthy 之山中的 Aha! 时刻。当你登上山顶时，你将实现一个 mal Lisp 语言的解释器，它十分强大，足以自给自足，这意味着你可以运行一个使用 mal 语言实现的 mal 语言的解释器。
 
-那么，现在可以跳坑（呃... 可以开始攀登了）
+那么，现在可以跳坑（呃... 可以开始攀登）了
 
 - [选择一种语言](#pick-a-language)
 - [开始](#getting-started)
@@ -47,8 +47,8 @@ Make-A-Lisp 这个项目的目标是让你更容易地实现你自己的 Lisp �
 
 另外，如下的特性将让任务变得特别容易：
 
-* 动态类型 / boxed types（特别是，可以在序列型或关联型数据结构中存储不同类型数据，并且语言本身会帮你追踪数据的类型）
-* Compound data types support arbitrary runtime "hidden" data (metadata, metatables, dynamic fields attributes)
+* 动态类型/boxed types（特别是，可以在序列型或关联型数据结构中存储不同类型数据，并且语言本身会帮你追踪数据的类型）
+* 复合数据类型支持任意运行时“隐藏的”数据 (元数据，元表，动态字段属性) 
 
 这些语言有上面提到的所有的特性：JavaScript, Ruby, Python, Lua, R, Clojure
 
@@ -57,14 +57,14 @@ Michael Fogus 写过关于一些有趣但小众的编程语言的博客，在他
 * [http://blog.fogus.me/2011/08/14/perlis-languages/](http://blog.fogus.me/2011/08/14/perlis-languages/)
 * [http://blog.fogus.me/2011/10/18/programming-language-development-the-past-5-years/](http://blog.fogus.me/2011/10/18/programming-language-development-the-past-5-years/)
 
-流行的语言中大部分都已经有 mal 的实现了。但这并不应该打消你为一门已经有 mal 的实现的语言写一个你自己版本的实现的积极性。另外，如果你踏上这趟旅途，我建议你避免参考任何已有的实现（也就是“作弊”），这样才能最大化你的学习效果，而不是 borrow mine. 从另一个角度来说，如果你的目标是尽快实现 mal，你 ** 应该 ** 去寻找最接近于目标语言的实现，并经常去查阅参考。
+流行的语言中大部分都已经有 mal 的实现了。但这并不应该打消你为一门已经有 mal 的实现的语言写一个你自己版本的实现的积极性。另外，如果你踏上这趟旅途，我建议你避免参考任何已有的实现（也就是“作弊”），这样才能最大化你的学习效果，而不是从我这里借鉴一个。从另一个角度来说，如果你的目标是尽快实现 mal，你 ** 应该 ** 去寻找最接近于目标语言的实现，并经常去查阅参考。
 
 如果你想看一看编程语言流行程度的列表，可以看一下这张[编程语言流行程度图表](http://langpop.corger.nl/)。
 
 <a name='getting-started'></a>
 ## 开始
 
-* 安装你所选的语言的解释器 / 编译器，包管理器和构建工具（如果有的话）
+* 安装你所选的语言的解释器/编译器，包管理器和构建工具（如果有的话）
 * 在 GitHub 上 fork [mal](https://github.com/kanaka/mal) 这个仓库，并将你的 fork 仓库 clone 到本地:
 
 ```
@@ -86,7 +86,7 @@ IMPLS = ... quux ...
 quux_STEP_TO_PROG = mylang/$($(1)).qx
 ```
 
-* 在你的实现的目录下增加一个 "run" 脚本，来读取 “STEP” 这个环境变量，默认值为是 "stepA_mal"。确定这个 run 脚本已经设置了可执行的权限（否则测试将会失败，并且有 permission denied 的报错信息）下面分别是一种编译型语言和一种解释型语言（假设它的解释器叫 quux）的 "run" 脚本。
+* 在你的实现的目录下增加一个 "run" 脚本，来读取 "STEP" 这个环境变量，默认值为是 "stepA_mal"。确定这个 run 脚本已经设置了可执行的权限（否则测试将会失败，并且有 permission denied 的报错信息）下面分别是一种编译型语言和一种解释型语言（假设它的解释器叫 quux）的 "run" 脚本。
 
 ```
 #!/bin/bash
@@ -104,7 +104,7 @@ exec quux $(dirname $0)/${STEP:-stepA_mal}.qx "${@}"
 make "test^quux^stepX"
 ```
 
-如果你的实现语言是编译型语言，那么你还需要在你的实现的目录的顶层增加一个 Makefile 文件。用这个 Makefile 来定义如何构建指向 quux\_STEP\_TO\_PROG macro 的文件。最顶层的 Makefile 将在运行测试之前尝试构建这些目标。如果你的语言是脚本语言 / 非编译型语言，那么就不需要这个 Makefile 了，因为 quux\_STEP\_TO\_PROG 将指向一个已经存在的无需编译 / 构建的源代码文件。
+如果你的实现语言是编译型语言，那么你还需要在你的实现的目录的顶层增加一个 Makefile 文件。用这个 Makefile 来定义如何构建指向 quux\_STEP\_TO\_PROG macro 的文件。最顶层的 Makefile 将在运行测试之前尝试构建这些目标。如果你的语言是脚本语言/非编译型语言，那么就不需要这个 Makefile 了，因为 quux\_STEP\_TO\_PROG 将指向一个已经存在的无需编译/构建的源代码文件。
 
 <a name='general-hints'></a>
 ## 通用的提示
@@ -118,30 +118,30 @@ StackOverflow 和 Google 是你的好伙伴。如今的多语言开发者不会�
 * [http://rosettacode.org/](http://rosettacode.org/)
 * [http://rigaux.org/language-study/syntax-across-languages/](http://rigaux.org/language-study/syntax-across-languages/)
 
-不要让你自己陷入特定的难题中。由于 make-a-lisp 过程是由一系列的步骤所构成的，实际上构建一个 lisp 解释器的过程更像一棵有很多分叉的树。如果你卡在了尾调用优化，或者哈希表上时，就去做一些其他的部分。当你在做其他功能的时候，会经常突然得到解决问题的灵感。我力求清晰地组织这份指南和测试，以便某些问题的可以拖延一阵再解决。
+不要让你自己陷入特定的难题中。由于 make-a-lisp 过程是由一系列的步骤所构成的，实际上构建一个 Lisp 解释器的过程更像一棵有很多分叉的树。如果你卡在了尾调用优化，或者哈希表上时，就去做一些其他的部分。当你在做其他功能的时候，会经常突然得到解决问题的灵感。我力求清晰地组织这份指南和测试，以便某些问题的可以拖延一阵再解决。
 
-对于 “可推迟 / 可选” 的说明: 当你运行某个步骤的测试的时候，最后的一些测试可能会有 "optional"（可选的任务）的标记。这表示这些测试的功能对于基础的 mal 实现不是必须的。这份指南中的很多步骤有个 “可推迟的 ren w”(deferrable) 小节，它们并不是相同的意思。这些小节中包括了被标记为 "optional" 的测试，但也包括了对于后面步骤中所必要的功能。换句话讲，这是“实现你自己的 Lisp 的一场冒险”。
+对于 “可推迟 / 可选” 的说明: 当你运行某个步骤的测试的时候，最后的一些测试可能会有 "optional"（可选的任务）的标记。这表示这些测试的功能对于基础的 mal 实现不是必须的。这份指南中的很多步骤有个 “可推迟的任务”(deferrable) 小节，它们并不是相同的意思。这些小节中包括了被标记为 "optional" 的测试，但也包括了对于后面步骤中所必要的功能。换句话讲，这是“实现你自己的 Lisp 的一场冒险”。
 
 使用测试驱动开发，make-a-lisp 过程的每个步骤都有一组与之相关的测试，在过程中也会有用来运行特定步骤所有测试的脚本。找出一个失败的测试，修复它，重新测试，直到那个步骤中所有测试都能通过为止。
 
 ## 参考代码
 
-`process` 目录包含了一些过程中每个步骤的简略伪代码的和架构图。你可以用一个文本比较工具来比较前一个步骤和你当前步骤的伪代码之间的区别。每张架构图中对于上一步所做的变更都以红色高亮表示。这还有一份[cheatsheet](http://kanaka.github.io/mal/process/cheatsheet.html)，简明扼要地描述了每个步骤的关键变化。
+`process` 目录包含了一些过程中每个步骤的简略伪代码的和架构图。你可以用一个文本比较工具来比较前一个步骤和你当前步骤的伪代码之间的区别。每张架构图中对于上一步所做的变更都以红色高亮表示。这还有一份 [cheatsheet](http://kanaka.github.io/mal/process/cheatsheet.html)，简明扼要地描述了每个步骤的关键变化。
 
 当你彻底被某个步骤卡住了，并且有了想放弃的念头，那么你应该“作个小弊”，参考一下已经存在的语言的实现对于当前步骤或功能的代码。因为你是来学习的，不是来考试的，所以不要有太强的负罪感。好吧，你最好还是能稍微认识到，这种行为不太好。
 
 <a name='the-make-a-lisp-process-1'></a>
-## Make-A-Lisp 的流程
+## Make-A-Lisp 实现一个 Lisp 解释器
 以下步骤的目标语言叫作 "quux"，文件名后缀是 "qx"
 
 <a name='step-0-the-repl'></a>
 ### 步骤 0: The REPL 读取求值打印循环(Read-Eval-Print Loop)
 ![step0_repl](/content/images/2017/03/step0_repl.png)
 
-这个步骤基本上只是创建了你解释器的框架。
+这个步骤基本上仅创建了你解释器的框架。
 
 * 在 `quux/` 目录下创建 `step0_repl.qx` 文件。
-* 添加 4 个函数 `READ`,`EVAL`,`PRINT` 以及 `rep`(read-eval-print)。`READ`,`EVAL` 和 `PRINT` 基本上是 #tbd 返回它们的第一个参数（如果你的目标语言是静态类型的话，是一个字符串），`rep` 按顺序调用它们，将前一个的返回值传递给下一个。
+* 添加 4 个函数 `READ`,`EVAL`,`PRINT` 以及 `rep`(read-eval-print)。`READ`,`EVAL` 和 `PRINT` 基本上是个假的实现，它只是返回它们的第一个参数（如果你的目标语言是静态类型的话，是一个字符串），`rep` 按顺序调用它们，将前一个的返回值传递给下一个。
 * 如果你使用一个编译型语言（静态编译「ahead-of-time」，而不是即时编译「just-in-time」），那么在你的目录下创建一个 Makefile（或者适当的项目定义文件）。
 
 现在是时候运行你的第一部分测试了。它们将检查你的程序的输入和事实是否可以被测试所捕获。在目录顶层运行如下命令：
@@ -155,7 +155,7 @@ make "test^quux^step0"
 恭喜你！你已经完成了 make-a-lisp 的第一个步骤。
 
 #### 可选的任务：
-* 为你的解释器的 REPL 增加整行编辑和命令历史功能。许多语言已经提供了支持行编辑的库 / 模块。另外一个选项是，如果你用的语言支持用 FFI (foreign function interface 外来函数接口)来直接加载调用 GNU readline, editline 或 linenoise 库。将行编辑接口代码写在 `readline.qx` 文件中。
+* 为你的解释器的 REPL 增加整行编辑和命令历史功能。许多语言已经提供了支持行编辑的库/模块。另外一个选项是，如果你用的语言支持用 FFI (foreign function interface 外来函数接口)来直接加载调用 GNU readline, editline 或 linenoise 库。将行编辑接口代码写在 `readline.qx` 文件中。
 
 <a name='step-1-read-and-print'></a>
 ### 步骤 1: Read and Print 读取和打印
@@ -163,7 +163,7 @@ make "test^quux^step0"
 
 这个步骤中，你需要让你的解释器 “读取”(read) 用户输入的字符串，并把它解析为一种内部的树形数据结构（AST，抽象语法树），然后将这个数据结构 “打印”(print) 成字符串。
 
-在非 lisp 类语言中，这个步骤（叫作“词法分析和语法分析”）将会是编译器 / 解释器中最复杂的部分之一。而在 Lisp 中，你想要的这种数据的结构与程序员写的代码的结构基本上是一致的（Homoiconicity，同像性）。
+在非 Lisp 类语言中，这个步骤（叫作“词法分析和语法分析”）将会是编译器 / 解释器中最复杂的部分之一。而在 Lisp 中，你想要的这种数据的结构与程序员写的代码的结构基本上是一致的（Homoiconicity，同像性）。
 
 举个例子，如果字符串是 "(+ 2 (* 3 4))" 那么读取 (read) 函数将把它解析为这样的树形结构：
 
@@ -179,11 +179,11 @@ make "test^quux^step0"
          Sym:*  Int:3  Int:4
 ```
 
-每个左括号和与它匹配的右括号 (在 lisp 中叫 S - 表达式"sexpr") 成为树中的一个节点，而其他的一切都成为了树中的叶子节点。
+每个左括号和与它匹配的右括号 (在 lisp 中叫 S-表达式"sexpr") 成为树中的一个节点，而其他的一切都成为了树中的叶子节点。
 
 如果你能找到一份你目标语言的 JSON encoder/decoder 的实现代码，那么你就可以通过借鉴和修改它来搞定本步骤中 75% 的任务。
 
-这一节余下的部分假设你没有从 JSON encoder/decoder 起步，而是使用了一个 Perl 兼容的正则表达式 (PCRE) 库 / 模块。的确，你可以采用简单的字符串操作来实现这个功能，#tbd。`make` 和 `ps`(postscript)和 Haskell 的实现中有一些不使用正则表达式实现 reader 的例子。
+这一节余下的部分假设你没有从 JSON encoder/decoder 起步，而是使用了一个 Perl 兼容的正则表达式 (PCRE) 库/模块。的确，你可以采用简单的字符串操作来实现这个功能，#tbd。`make` 和 `ps`(postscript) 和 Haskell 的实现中有一些不使用正则表达式实现 reader 的例子。
 
 * 复制 `step0_repl.qx` 并重命名为 `step1_read_print.qx`。
 * 新建一个 `reader.qx` 文件来保存与 reader 有关的函数。
@@ -195,14 +195,14 @@ make "test^quux^step0"
 [\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"|;.*|[^\s\[\]{}('"`,;)]*)
 ```
 
-* 对于每一个 #tbd，将被解析为一个新的 token
-  * `[\s,]*`: 匹配任意个数的空格或逗号。它不是捕获对象，因此它会被忽略掉，不会被解析(not tokenized)
-  * `~@`: 捕获两个特殊字符的组合 `~@`，会被解析(tokenized)
-  * `[\[\]{}()'`~^@]`: 捕获 `[]{}()'`~^@` 这些字符中任意一个，会被解析(tokenized)
-  * `"(?:\\.|[^\\"])*"`: 捕获由双引号开头，并到下一个双引号结束之间的内容，如果中间出现双引号，且双引号前面有反斜杠，则将它们也包括在捕获的内容中，直到下一个双引号。会被解析(tokenized)
-  * `;.*`: 捕获由分号 `;` 开头的任意序列，会被解析(tokenized)
+* 对于每一个在括号中被捕获的For each match captured within the parenthesis starting at char 6 of the regular expression，将创建一个新的 token
+  * `[\s,]*`: 匹配任意个数的空格或逗号。它不是捕获对象，因此它会被忽略掉，不会被切分(not tokenized)
+  * `~@`: 捕获两个特殊字符的组合 `~@`，会被切分(tokenized)
+  * `[\[\]{}()'`~^@]`: 捕获 `[]{}()'`~^@` 这些字符中任意一个，会被切分(tokenized)
+  * `"(?:\\.|[^\\"])*"`: 捕获由双引号开头，并到下一个双引号结束之间的内容，如果中间出现双引号，且双引号前面有反斜杠，则将它们也包括在捕获的内容中，直到下一个双引号。会被切分(tokenized)
+  * `;.*`: 捕获由分号 `;` 开头的任意序列，会被切分(tokenized)
   * ```[^\s\[\]{}('"`,;)]*```: 捕获一系列由零个或更多个非特殊字符组成的序列(如，symbol, 数字,"true","false"以及"nil")
-* 在 `reader.qx` 文件中增加一个 `read_form` 函数，这个函数要读取 Reader 对象的第一个 token，然后 #tbd 第一个字符。如果第一个字符是左括号，则使用 `read_list` 函数处理这个 Reader 对象。否则使用 `read_atom` 函数处理 Reader 对象。`read_form` 的返回值是一个 mal 数据类型。如果你的目标语言是静态类型语言，那么你要想办法让 `read_form` 函数能够返回出不同的类型或者子类型。举例来说，如果你用的是一门面向对象的语言，那么你可以在最顶层中定义 MalType(在 types.qx 中)，随后你的其他 mal 数据结构就可以继承它了。 MalList 类型（也是继承自 MalType）将由一个包含其他 MalType 对象的数组 / 列表构成。如果你用的语言是动态类型的，那么只需要返回一个包含其他 MalType 对象的数组 / 列表即可
+* 在 `reader.qx` 文件中增加一个 `read_form` 函数，这个函数要读取 Reader 对象的第一个 token，然后对第一个字符做条件判断。如果第一个字符是左括号，则使用 `read_list` 函数处理这个 Reader 对象。否则使用 `read_atom` 函数处理 Reader 对象。`read_form` 的返回值是一个 mal 数据类型。如果你的目标语言是静态类型语言，那么你要想办法让 `read_form` 函数能够返回出不同的类型或者子类型。举例来说，如果你用的是一门面向对象的语言，那么你可以在最顶层中定义 MalType(在 types.qx 中)，随后你的其他 mal 数据结构就可以继承它了。 MalList 类型（也是继承自 MalType）将由一个包含其他 MalType 对象的数组 / 列表构成。如果你用的语言是动态类型的，那么只需要返回一个包含其他 MalType 对象的数组 / 列表即可
 * 在 `reader.qx` 中新增一个 `read_list` 函数。这个函数将对 Reader 对象反复调用 `read_form` 函数，直到遇到个 ')' 字符(如果在')' 之前遇到了 EOF，那就说明出错了)。它把调用结果收集到一个 List 类型中。如果你的语言中不存在能够存储多个 mal 数据类型的值的顺序数据类型，那么你需要自己实现一个（在 `types.qx` 中实现）。注意 `read_list` 函数反复调用的是 `read_form`，而不是 `read_atom` 函数。这种在 `read_list` 与 `read_form` 之间的递归定义可以能够让列表中包含列表。 
 * 在 `reader.qx` 中新增一个 `read_atom` 函数。函数将会解析 token 的内容，并返回合适的纯（简单，非复合的）数据类型。最开始，你可以只实现数字类型（整型 integer）和 symbol。这能使你继续后面的一些步骤，在随后再继续实现其他的一些类型: nil, true, false 和 string。这些保留的 mal 类型: keyword, vector, hash-map 和 atom 在步骤 9 之前都不需要实现（但可以在本步骤到步骤 9 之间的任意时间点实现）。还有，symbol 类型只是一个由单独的字符串名字构成的对象（有些语言已经有 symbol 类型了）。
 * 创建一个名为 `printer.qx` 的文件。这个文件包含一个叫 `pr_str` 的函数，它的功能与 `read_str` 正好相反：输入一个 mal 数据结构，返回出它的字符串形式。但是 `pr_str` 的功能很简单，它只是对于输入对象的一个 switch 语句：
@@ -211,7 +211,7 @@ make "test^quux^step0"
   * list: 对于列表中的每一个元素调用 `pr_str`，然后将结果使用空格分隔，把它们拼接在一起，最后在最外面加上括号
 * 修改 `step1_read_print.qx` 中的 `READ` 函数，让它调用 `reader.read_str`，并且 `PRINT` 函数调用 `printer.pr_str`。`EVAL` 函数继续直接返回输入的东西，但是如今返回值的类型应当是 mal 数据类型了。
 
-现在你 #tbd 可以开始测试你的代码了。你可以手工测试一些简单的输入：
+现在你已经实现了足够多的东西，可以开始测试你的代码了。你可以手工测试一些简单的输入：
 
 * `123` -> `123`
 * `123` -> `123`
@@ -221,7 +221,7 @@ make "test^quux^step0"
 * `(123 456 789)` -> `(123 456 789)`
 * `(+ 2 (* 3 4) )` -> `(+ 2 (* 3 4))`
 
-为了验证你的代码不只是去掉了多余的空格（并且没有失败），你可以 #tbd 你的 `reader.qx` 中的函数。
+为了验证你的代码不只是去掉了多余的空格（并且没有失败），你可以 instrument 你的 `reader.qx` 中的函数。
 
 当你已经通过了上述的简单手工测试，就可以运行步骤 1 的测试了。到最顶层的目录，执行下面的命令：
 
@@ -234,19 +234,19 @@ make "test^quux^step1"
 
 
 #### 可推迟的任务:
-* 为你的 reader 和 printer 函数增加其他的基础类型的支持: string, nil, true, and false. 这些类型在步骤 4 的时候就是必需的了。在读取一个字符串之后，要进行下列的转换：一个反斜杠后面跟着双引号的时候 `\"`，需要把它们翻译为一个普通的双引号 `"`，反斜杠后跟着 n 的时候 `\n` 需要翻译为换行，一个反斜杠后面跟着另一个双引号的时候 `\\`，需要把它们翻译为一个单引号 `\`。为了能正确的打印字符串（#tbd），`pr_str` 函数需要另一个叫作 `print_readably` 的参数。当这个参数为 true 的时候，双引号、换行符和反斜杠会被翻译为它们被打印出来的表现形式（与 reader 的逻辑正好相反）。主程序中的 `PRINT` 函数应该在调用 `pr_str` 时将 print_readably 设置为 true。
+* 为你的 reader 和 printer 函数增加其他的基础类型的支持: string, nil, true, 和 false. 这些类型在步骤 4 的时候就是必需的了。在读取一个字符串之后，要进行下列的转换：一个反斜杠后面跟着双引号的时候 `\"`，需要把它们翻译为一个普通的双引号 `"`，反斜杠后跟着 n 的时候 `\n` 需要翻译为换行，一个反斜杠后面跟着另一个双引号的时候 `\\`，需要把它们翻译为一个单引号 `\`。为了能正确的打印字符串（为了步骤 4 中的字符串函数），`pr_str` 函数需要另一个叫作 `print_readably` 的参数。当这个参数为 true 的时候，双引号、换行符和反斜杠会被翻译为它们被打印出来的表现形式（与 reader 的逻辑正好相反）。主程序中的 `PRINT` 函数应该在调用 `pr_str` 时将 print_readably 设置为 true。
 * 为 reader 函数增加更多的错误检查，确保括号都能够正确匹配。在主循环中捕获并打印这些错误信息。如果你的语言中没有 try/catch 风格的冒泡式异常处理功能，那么你需要在代码中加上一个显式的异常处理，并且跳过错误，不要让程序崩溃掉。
 * 为 reader 加上 macros 支持。这能够在读取阶段时将某些形式转换为其他形式。在 `tests/step1_read_print.mal` 中可以找到需要支持哪种 macros 的形式（它们只是对 token 流的简单转换）
 * 支持其他几种 mal 数据类型: keyword, vector, hash-map.
-  * keyword(关键字): keyword 是由冒号开头的 token。keyword 只能存储为有特殊 unicode 前缀的字符串，像 0x29E (或字符 0xff/127, 如果目标语言没有很好的 unicode 支持的话) printer 会把带这个前缀的字符串转换回 keyword 表示。这能够让在大多数语言中使用 keyword 作为哈希表的 key 变得很容易。你也可以将 keyword 存储为一种唯一数据类型，但你要确定它们可以作为哈希表的 key 使用（#tbd）。
-  * vector(向量): vector 可以被实现为 #tbd。你可以通过在开头和结尾的 token 上加上参数，从而做到使用同一个 reader 函数操作 list 和 vector 的功能。
+  * keyword(关键字): keyword 是由冒号开头的 token。keyword 只能存储为有特殊 unicode 前缀的字符串，像 0x29E (或字符 0xff/127, 如果目标语言没有很好的 unicode 支持的话) printer 会把带这个前缀的字符串转换回 keyword 表示。这能够让在大多数语言中使用 keyword 作为哈希表的 key 变得很容易。你也可以将 keyword 存储为一种唯一数据类型，但你要确定它们可以作为 hash-map 的 key 使用（这可能需要一种类似的前缀赚黄）。
+  * vector(向量): vector 可以使用与 list 相同的底层类型实现，只要有一种能够记录它们之间区别的机制就行。你可以通过在开头和结尾的 token 上加上参数，从而做到使用同一个 reader 函数操作 list 和 vector 的功能。
   * hash-map(哈希表): 哈希表是一种关系型数据结构，它将字符串映射到其他 mal 类型的值上。如果你将 keyword 实现为带前缀的的字符串，那么你只需要一种原生的关系数据结构，只要它支持以字符串作为 key 就可以了。Clojure 支持把任何值作为哈希表的 key，但在 mal 的基础功能中只需要支持把字符串作为 key 即可。因为将 hash-map 表示为 key 和 value 的交替序列，你可能可以用读取 list 和 vector 的 reader 函数来处理 hash-map，只需要用参数来标示它的开头和结尾 token 即可。奇数位置的 token 作为 key，而偶数位置的 token 作为 value。
 * 为你的 reader 增加对注释的支持。tokenizer 应该忽略由 ";" 开头的 token。你的 `reader_str` 函数需要正确的处理 tokenizer 不返回任何值的情况。最简单的办法是返回 `nil` 这个 mal 类型的值。一个更加简明的（在这种情况下不打印 nil）方式是抛出一个特殊的异常，使主循环直接在循环的开头跳过循环，从而不调用 rep。
 
 ### 步骤 2: Eval 求值
 ![step2_eval](/content/images/2017/03/step2_eval.png)
 
-在步骤 1 中，你的 mal 解释器基本上只有验证输入然后去除输出结果中多余空格的功能。在本步骤中，你将会为你的解释器增加 evaluator (EVAL)的功能，从而把它改成一个简单的计算器。
+在步骤 1 中，你的 mal 解释器基本上只有验证输入然后去除输出结果中多余空格的功能。在本步骤中，你将会为你的解释器增加 evaluator (EVAL) 的功能，从而把它改成一个简单的计算器。
 
 比较步骤 1 和步骤 2 的伪代码，可以对本步骤中将要做的修改有简要的了解：
 
@@ -276,7 +276,7 @@ repl_env = {'+': lambda a,b: a+b,
 
 如果你的目标语言不支持可变长度参数（例如，variadic, vararg, splats, apply），那么你需要将整个参数的列表作为一个单独的参数，然后在每个 mal 函数中再将它切分为一个个独立的值。这样做虽然比较闹心，但还是可以凑合用的。
 
-对于一个 list#tbd
+调用或执行一个 list 并返回某些新的东西，这样的过程在 Lisp 中被称为 "apply"(应用) 步骤。
 
 用这些表达式来进行测试：
 
@@ -295,7 +295,7 @@ make "test^quux^step2"
 
 可推迟的任务：
 
-* `eval_ast` 应该 #tbd vector 和 hash-map。在 `eval_ast` 函数中加入下列情况：
+* `eval_ast` 应该对 vector 和 hash-map 中的元素进行求值。在 `eval_ast` 函数中加入下列条件判断：
   * 如果 `ast` 是一个 vector: 返回对于 vector 中的每个元素 `EVAL` 调用得到的结果所组成的 vector
   * 如果 `ast` 是一个 hash-map: 返回一个新的 hash-map，它的 key 是从原 hash-map 中来的 key，value 是对于原 hash 中的 value 调用 `EVAL` 得到的结果。
 
@@ -322,7 +322,7 @@ mal 类型对象作为 value，并将它们装入 `data` 结构中
   * get: 接受一个 symbol 的 key 参数，并且用 `find` 方法来找到这个 key 对应的环境，并且返回匹配到的 value。如果没有在外层环境的链中没有找到这个 key，则抛出一个 "not found"（未找到）错误
 * 更新 `step3_env.qx`，使用新的 Env 类型来创建 repl_env(它的 outer 参数设置为 nil)，并且使用 `set` 方法将算数运算函数加入到环境中
 * 修改 `eval_ast`，对 env 参数调用 `get` 方法
-* 修改 `EVAL` 函数的 apply 的部分，对于 list 的第一个元素 #tbd:
+* 修改 `EVAL` 函数的 apply 的部分，对于 list 的第一个元素进行条件判断:
   * symbol "def!": 调用当前环境（`EVAL` 的第二个，名为 `env` 的参数）的 set 方法，使用未求值的第一个参数（list 的第二个元素）作为 symbol key，并且将已求值的第二个参数作为 value
   * symbol "let*": 以当前环境作为 outer，创建一个新的环境，并将第一个参数作为列表 #tbd。
   * 否则: 对于 list 调用 `eval_ast`，并将第一个元素应用到后面的 #tbd
