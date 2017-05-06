@@ -183,7 +183,7 @@ make "test^quux^step0"
 
 如果你能找到一份你目标语言的 JSON encoder/decoder 的实现代码，那么你就可以通过借鉴和修改它来搞定本步骤中 75% 的任务。
 
-这一节余下的部分假设你没有从 JSON encoder/decoder 起步，而是使用了一个 Perl 兼容的正则表达式 (PCRE) 库/模块。的确，你可以采用简单的字符串操作来实现这个功能，#tbd。`make` 和 `ps`(postscript) 和 Haskell 的实现中有一些不使用正则表达式实现 reader 的例子。
+这一节余下的部分假设你没有从 JSON encoder/decoder 起步，而是使用了一个 Perl 兼容的正则表达式 (PCRE) 库/模块。的确，你可以采用简单的字符串操作来实现这个功能，但那样更复杂。`make` 和 `ps`(postscript) 和 Haskell 的实现中有一些不使用正则表达式实现 reader 的例子。
 
 * 复制 `step0_repl.qx` 并重命名为 `step1_read_print.qx`。
 * 新建一个 `reader.qx` 文件来保存与 reader 有关的函数。
@@ -230,7 +230,7 @@ make "test^quux^step1"
 ```
 修复所有与 symbol, number 和 list 有关的失败测试。
 
-你现在已经完成了最困难的步骤之一。#tbd 剩下的步骤可能更简单，并且每个步骤会逐渐让你有更多的收获。
+你现在已经完成了最困难的步骤之一。从这儿开始就是下山的路了，剩下的步骤可能更简单，并且每个步骤会逐渐让你有更多的收获。
 
 
 #### 可推迟的任务:
@@ -272,7 +272,8 @@ repl_env = {'+': lambda a,b: a+b,
 * 修改 `EVAL` 函数，检查它的第一个参数 `ast` 是不是一个 list。
   * `ast` 不是 list: 返回对它调用 `eval_ast` 得到的结果
   * `ast` 是一个空的 list: 原封不动地返回 ast
-  * `ast` 是一个 list: 调用 `eval_ast` 得到一个新的执行过的 list #tbd 
+  * `ast` 是一个 list: 调用 `eval_ast` 得到一个新的求值后的 list。取求值结果
+ list 的的第一项，将它作为函数调用，以求值结果 list 的余下项作为参数传入。
 
 如果你的目标语言不支持可变长度参数（例如，variadic, vararg, splats, apply），那么你需要将整个参数的列表作为一个单独的参数，然后在每个 mal 函数中再将它切分为一个个独立的值。这样做虽然比较闹心，但还是可以凑合用的。
 
@@ -283,7 +284,7 @@ repl_env = {'+': lambda a,b: a+b,
 * `(+ 2 3)` -> `5`
 * `(+ 2 (* 3 4))` -> `14`
 
-你最可能遇到的挑战是，如何使用一个参数列表 #tbd
+你最可能遇到的挑战是，如何正确地以一个参数列表作为参数调用函数引用。
 
 现在，回到顶层目录，执行步骤 2 的测试，并修复错误。
 
@@ -291,7 +292,7 @@ repl_env = {'+': lambda a,b: a+b,
 make "test^quux^step2"
 ```
 
-现在你有了一个简单的前缀表达式计算器了。
+现在你拥有了一个简单的前缀表达式计算器。
 
 可推迟的任务：
 
@@ -302,9 +303,9 @@ make "test^quux^step2"
 ### 步骤 3: Environments 环境
 ![step3_env](/content/images/2017/03/step3_env.png)
 
-在步骤 2 中我们已经实现了 REPL 环境 (`repl_env`)，在这个环境中可以存储和查找基本的算数运算函数。在本步骤中，你将会为解释器增加创建新环境(`let*`) 和修改已存在的环境 (`def!`) 的功能。
+在步骤 2 中我们已经实现了 REPL 环境 (`repl_env`)，在这个环境中可以存储和查找基本的算数运算函数。在本步骤中，你将会为解释器增加创建新环境 (`let*`) 和修改已存在的环境 (`def!`) 的功能。
 
-Lisp 的环境是一个关系数据结构，它将 symbol(即 key)映射到 value 上。但是 Lisp 环境还有一个很重要的额外功能：它们可以引用 refer 另一个环境(外层的环境)。在环境中进行查找时，如果当前环境中没有要找的 symbol，那么将在外层环境中继续查找，持续进行这个过程，直到找到 symbol，或者外层的环境是 `nil`(在整个链中的最外层)
+Lisp 的环境是一个关系数据结构，它将 symbol (即 key) 映射到 value 上。但是 Lisp 环境还有一个很重要的额外功能：它们可以引用 (refer) 另一个环境 (外层的环境)。在环境中进行查找时，如果当前环境中没有要找的 symbol，那么将在外层环境中继续查找，持续进行这个过程，直到找到 symbol，或者外层的环境是 `nil`(在整个链中的最外层)为止。
 
 比较步骤 2 和步骤 3 的伪代码，可以对本步骤中将要做的修改有简要的了解：
 
@@ -320,12 +321,12 @@ diff -urp ../process/step2_eval.txt ../process/step3_env.txt
 mal 类型对象作为 value，并将它们装入 `data` 结构中 
   * find: 接受一个 symbol 的 key 参数，如果当前环境中找到了这个 key，那么返回环境。如果没有找到，并且外层环境不是 `nil`，那么在外层环境中（递归）调用 find
   * get: 接受一个 symbol 的 key 参数，并且用 `find` 方法来找到这个 key 对应的环境，并且返回匹配到的 value。如果没有在外层环境的链中没有找到这个 key，则抛出一个 "not found"（未找到）错误
-* 更新 `step3_env.qx`，使用新的 Env 类型来创建 repl_env(它的 outer 参数设置为 nil)，并且使用 `set` 方法将算数运算函数加入到环境中
+* 更新 `step3_env.qx`，使用新的 Env 类型来创建 repl_env (它的 outer 参数设置为 nil)，并且使用 `set` 方法将算数运算函数加入到环境中
 * 修改 `eval_ast`，对 env 参数调用 `get` 方法
 * 修改 `EVAL` 函数的 apply 的部分，对于 list 的第一个元素进行条件判断:
   * symbol "def!": 调用当前环境（`EVAL` 的第二个，名为 `env` 的参数）的 set 方法，使用未求值的第一个参数（list 的第二个元素）作为 symbol key，并且将已求值的第二个参数作为 value
-  * symbol "let*": 以当前环境作为 outer，创建一个新的环境，并将第一个参数作为列表 #tbd。
-  * 否则: 对于 list 调用 `eval_ast`，并将第一个元素应用到后面的 #tbd
+  * symbol "let*": 以当前环境作为 outer，创建一个新的环境，并将第一个参数作为"let*"环境中新binding的列表。取 binding 列表的第二个元素，以新 "let*" 环境作为求值环境调用EVAL，然后在 "let*" 环境上调用set，以binding列表第一个元素作为key，以求值后的第二个元素作为 value。对于 binding 列表中的每个奇/偶对重复进行上述过程。要特别注意的是，在列表前面的 binding，可以被后面的binding引用。最终，原始 let* 形式的第二个参数 (即第三个元素) 使用新的 "let*" 环境进行求值，结果作为新的 "let*" 的结果返回。 (新的 let 环境在结束后被丢弃)
+  * 否则: 对于 list 调用 `eval_ast`，并像前面一样，将第一个元素应用到余下的元素上。
 
 `def!` 和 `let*` 是 Lisp 中的特例（或叫“特殊 atom 原子”），意思是它们是语言级别的特性，比 list 剩下的元素（参数）更特别，#tbd（太长了 = =）
 
