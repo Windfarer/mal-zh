@@ -13,7 +13,7 @@ get the full version of source code.
 
 听说你想自己写一个 Lisp 解释器？欢迎入坑！
 
-Make-A-Lisp 这个项目的目标是让你更容易地实现你自己的 Lisp 解释器，使你在攀登 McCarthy (译注: 即[约翰·麦卡锡](https://zh.wikipedia.org/zh-hans/%E7%BA%A6%E7%BF%B0%C2%B7%E9%BA%A6%E5%8D%A1%E9%94%A1), Lisp语言之父) 之山的过程中避开需要顿悟的难题("Aha!" moment)。当你登上山顶时，你将实现一个 mal Lisp 语言的解释器，它十分强大，可以做到自足执行(self-hosting)，这意味着你可以运行一个使用 mal 语言实现的 mal 语言的解释器。
+Make-A-Lisp 这个项目的目标是让你更容易地实现你自己的 Lisp 解释器，使你在攀登 McCarthy (译注: 即[约翰·麦卡锡](https://zh.wikipedia.org/zh-hans/%E7%BA%A6%E7%BF%B0%C2%B7%E9%BA%A6%E5%8D%A1%E9%94%A1), Lisp语言之父) 之山的过程中，避开那些需要顿悟的难题("Aha!" moment)。当你登上山顶时，你将实现一个 mal Lisp 语言的解释器，它十分强大，可以做到自足执行(self-hosting)，这意味着你可以运行一个使用 mal 语言实现的 mal 语言的解释器。
 
 那么，现在可以跳坑（呃... 可以开始攀登）了
 
