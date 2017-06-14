@@ -1,7 +1,7 @@
 
-本项目是对 [kanaka/mal](https://github.com/kanaka/mal) 这个项目中 [指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md) 的简体中文翻译。这份指南教你如何用某种编程语言实现一个 Lisp 解释器。请使用原项目 [kanaka/mal](https://github.com/kanaka/mal) 进行你的开发和学习等工作。
+本项目是对 [kanaka/mal](https://github.com/kanaka/mal) 这个项目中 [指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md) 的简体中文翻译。这份指南教你如何用某种编程语言实现一个 Lisp 解释器。请使用原项目 [kanaka/mal](https://github.com/kanaka/mal) 进行开发和学习。译文的最新版本维护在仓库 [Windfarer/mal-zh](https://github.com/kanaka/mal-zh)
 
-本译文的最新版本维护在 [Windfarer/mal-zh](https://github.com/kanaka/mal-zh)
+本译文按照 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh) 进行授权。
 
 This project is a Simplified Chinese translation of [kanaka/mal](https://github.com/kanaka/mal) project's guide. Take a look at 
  the origin repository [kanaka/mal](https://github.com/kanaka/mal) to 
@@ -35,7 +35,7 @@ Make-A-Lisp 这个项目的目标是让你更容易地实现你自己的 Lisp �
 
 <a name='pick-a-language'></a>
 ## 选择一种语言
-可能你心中已经有了使用哪种语言的打算。从技术角度来讲，mal 可以使用任何足够完备的编程语言来实现（即：图灵完备），然而，有一些语言的特性将使得任务变得 ** 更加 ** 简单。下面粗略按照重要程度列举了一些：
+可能你心中已经有了使用哪种语言的打算。从技术角度来讲，mal 可以使用任何足够完备的编程语言来实现(即：图灵完备)，然而，有一些语言的特性将使得任务变得 ** 更加 ** 简单。下面粗略按照重要程度列举了一些：
 
 * 序列型数据结构（例如: 数组，列表，向量等）
 * 关联型数据结构（例如：字典，哈希表，关联数组等）
@@ -238,9 +238,9 @@ make "test^quux^step1"
 * 为 reader 函数增加更多的错误检查，确保括号都能够正确匹配。在主循环中捕获并打印这些错误信息。如果你的语言中没有 try/catch 风格的冒泡式异常处理功能，那么你需要在代码中加上一个显式的异常处理，并且跳过错误，不要让程序崩溃掉。
 * 为 reader 加上 macros 支持。这能够在读取阶段时将某些形式转换为其他形式。在 `tests/step1_read_print.mal` 中可以找到需要支持哪种 macros 的形式（它们只是对 token 流的简单转换）
 * 支持其他几种 mal 数据类型: keyword, vector, hash-map.
-  * keyword(关键字): keyword 是由冒号开头的 token。keyword 只能存储为有特殊 unicode 前缀的字符串，像 0x29E (或字符 0xff/127, 如果目标语言没有很好的 unicode 支持的话) printer 会把带这个前缀的字符串转换回 keyword 表示。这能够让在大多数语言中使用 keyword 作为哈希表的 key 变得很容易。你也可以将 keyword 存储为一种唯一数据类型，但你要确定它们可以作为 hash-map 的 key 使用（这可能需要一种类似的前缀赚黄）。
-  * vector(向量): vector 可以使用与 list 相同的底层类型实现，只要有一种能够记录它们之间区别的机制就行。你可以通过在开头和结尾的 token 上加上参数，从而做到使用同一个 reader 函数操作 list 和 vector 的功能。
-  * hash-map(哈希表): 哈希表是一种关系型数据结构，它将字符串映射到其他 mal 类型的值上。如果你将 keyword 实现为带前缀的的字符串，那么你只需要一种原生的关系数据结构，只要它支持以字符串作为 key 就可以了。Clojure 支持把任何值作为哈希表的 key，但在 mal 的基础功能中只需要支持把字符串作为 key 即可。因为将 hash-map 表示为 key 和 value 的交替序列，你可能可以用读取 list 和 vector 的 reader 函数来处理 hash-map，只需要用参数来标示它的开头和结尾 token 即可。奇数位置的 token 作为 key，而偶数位置的 token 作为 value。
+  * 关键字 (keyword): keyword 是由冒号开头的 token。keyword 只能存储为有特殊 unicode 前缀的字符串，像 0x29E (或字符 0xff/127, 如果目标语言没有很好的 unicode 支持的话) printer 会把带这个前缀的字符串转换回 keyword 表示。这能够让在大多数语言中使用 keyword 作为哈希表的 key 变得很容易。你也可以将 keyword 存储为一种唯一数据类型，但你要确定它们可以作为 hash-map 的 key 使用（这可能需要一种类似的前缀赚黄）。
+  * 向量 (vector): vector 可以使用与 list 相同的底层类型实现，只要有一种能够记录它们之间区别的机制就行。你可以通过在开头和结尾的 token 上加上参数，从而做到使用同一个 reader 函数操作 list 和 vector 的功能。
+  * 哈希表 (hash-map): 哈希表是一种关系型数据结构，它将字符串映射到其他 mal 类型的值上。如果你将 keyword 实现为带前缀的的字符串，那么你只需要一种原生的关系数据结构，只要它支持以字符串作为 key 就可以了。Clojure 支持把任何值作为哈希表的 key，但在 mal 的基础功能中只需要支持把字符串作为 key 即可。因为将 hash-map 表示为 key 和 value 的交替序列，你可能可以用读取 list 和 vector 的 reader 函数来处理 hash-map，只需要用参数来标示它的开头和结尾 token 即可。奇数位置的 token 作为 key，而偶数位置的 token 作为 value。
 * 为你的 reader 增加对注释的支持。tokenizer 应该忽略由 ";" 开头的 token。你的 `reader_str` 函数需要正确的处理 tokenizer 不返回任何值的情况。最简单的办法是返回 `nil` 这个 mal 类型的值。一个更加简明的（在这种情况下不打印 nil）方式是抛出一个特殊的异常，使主循环直接在循环的开头跳过循环，从而不调用 rep。
 
 ### 步骤 2: Eval 求值
@@ -483,7 +483,7 @@ diff -urp ../process/step5_tco.txt ../process/step6_file.txt
 * `atom?`: 判断输入的参数是不是原子，如果是，返回 true。
 * `deref`: 输入一个原子作为参数，返回这个原子所引用的值。
 * `reset!`: 输入一个原子以及一个 mal 值，修改原子，让它指向这个 mal 值，并返回这个 mal 值。
-* `swap!`: 输入一个原子，一个函数，以及零个或多个函数参数。原子的值被修改为 #tbd 返回新的原子的值。#tbd
+* `swap!`: 输入一个原子，一个函数，以及零个或多个函数参数。将原子的值作为第一参数，并将余下的函数参数作为可选的参数传输函数中，将原子的值置为函数的求值结果。返回新的原子的值。(边注: Mal是单线程的，但在像Clojure之类的并发语言中，`swap!`将是一个原子操作，`(swap! myatom (fn* [x] (+ 1 x)))`总是会把`myatom`计数增加1，并且在原子被多个线程操作时不会导致结果出错)
 
 你可以增加一个 reader macro`@`，它相当于一个 `deref` 的简略形式，因此 `@a` 相当于 `(deref a)`。为了达到这个目的，修改 `read_form` 函数的条件判断，增加一个规则，处理 `@`token: 如果 token 是 `@`(at 符号)，那么返回一个包括 `deref` 符号以及读取下一个形式 (`read_form`) 结果的新列表。
 
@@ -506,21 +506,21 @@ make "test^quux^step6"
 
 在步骤 7 中，你将为解释器加上 `quote` 和 `quasiquote` 这两个特殊形式，并且加入 `cons` 和 `concat` 这两个核心函数的支持。
 
-特殊形式 `quote` 告诉求值器 (`EVAL`) 不要对参数进行求值。一开始，看起来这个功能没啥卵用，但能证明它有用的一个例子是，让 mal 程序能够有引用一个符号的自身，而不是它经过求值后的结果。比如列表。例如，考虑下列情况：
+特殊形式 `quote` 告诉求值器 (`EVAL`) 不要对参数进行求值。一开始，看起来这个功能没啥卵用，但有一个例子能够证明它有用，让 mal 程序能够有引用一个符号的自身，而不是它经过求值后的结果。比如列表。例如，考虑下列情况：
 
 * `(prn abc)`: 这段程序将在当前求值环境中寻找符号 `abc`。并打印到屏幕上。如果 `abc` 没有被定义过的话，就会报错。
 * `(prn (quote abc))`: 这段程序会打印 "abc"（打印符号本身）。它不会去管在当前环境中 `abc` 是否已被定义。
 * `(prn (1 2 3))`: 这段程序会报错，因为 `1` 不是函数，不能被应用于参数 `(2 3)` 上。
 * `(prn (quote (1 2 3)))`: 这段程序将打印 "(1 2 3)"。
-* `(def! l (quote (1 2 3)))`: list quoting 允许我们在代码中直接定义 list(#tbd). 另一个做这件事的方法是使用 list 函数 `(def! l (list 1 2 3))`。
+* `(def! l (quote (1 2 3)))`: list quoting 允许我们在代码中直接定义 list(字面列表). 另一个做这件事的方法是使用 list 函数 `(def! l (list 1 2 3))`。
 
-第二种特殊形式是 `quasiquote`。它允许一个 quoted list 能够有一些临时 unquoted 的元素(正常求值)。两种 #tbd`unquote` 和 `splice-unquote`。#tbd 最好的例子:
+第二种特殊形式是 `quasiquote`。它允许一个 quoted list 能够有一些临时 unquoted 的元素(正常求值)。有两种特殊形式`unquote` 和 `splice-unquote` 代表在 quasiquoted list 里面的东西。最好来点例子解释一下:
 
 * `(def! lst (quote (2 3)))` -> `(2 3)`
 * `(quasiquote (1 (unquote lst)))` -> `(1 (2 3))`
 * `(quasiquote (1 (splice-unquote lst)))` -> `(1 2 3)`
 
-`unquote` 形式对它的参数进行 #tbd，并将求值结果放入 quasiquoted list。形式 `splice-unquote` 也将它的参数 #tbd，但是被求值的值必须是列表，因为在后面它们会被切分 (splice) 到 quasiquoted list 中。在将它于 macro 一起使用的时候，quasiquote 形式的真实力量才会展现出来(在下一步骤中)。
+`unquote` 形式将将它的参数逆向求值，并将求值结果放入 quasiquoted list。形式 `splice-unquote` 也将它的参数逆向求值，但是被求值的值必须是列表，因为在后面它们会被切分 (splice) 到 quasiquoted list 中。在将它于 macro 一起使用的时候，quasiquote 形式的真实力量才会展现出来(在下一步骤中)。
 
 比较步骤 6 和步骤 7 的伪代码，可以对本步骤中将要做的修改有简要的了解：
 
@@ -537,7 +537,7 @@ diff -urp ../process/step6_file.txt ../process/step7_quote.txt
 
 * 添加 `quote` 特殊形式，这个特殊形式返回它的参数（`ast` 的第二个列表元素）
 
-* 添加 `quasiquote` 特殊形式。实现实现一个 helper 函数 `is_pair`，它在参数是一个非空列表的时候返回 true。然后定义 `quasiquote` 函数。#tbd`ast` 参数的第一个参数（第二个列表元素），随后 `ast` 被设置为结果，并且回到循环的开头继续执行（TCO，尾调用优化）。`quasiquote` 函数输入 `ast` 参数后，进行如下的条件判断：
+* 添加 `quasiquote` 特殊形式。实现实现一个 helper 函数 `is_pair`，它在参数是一个非空列表的时候返回 true。然后定义 `quasiquote` 函数。在 `EVAL` 中以 `ast` 的第一个参数（即第二个列表元素）为参数调用它，随后 `ast` 被设置为结果，并且回到循环的开头继续执行（TCO，尾调用优化）。`quasiquote` 函数输入 `ast` 参数后，进行如下的条件判断：
   1. 如果 `is_pair` 对于 `ast` 的判断结果是 false: 返回一个新列表，里面包括了一个名为 "quote" 的符号，以及 `ast`。
   2. 否则，如果 `ast` 的第一个元素是符号 "unquote": 返回 `ast` 的第二个元素。
   3. 如果 `is_pair` 对于 `ast` 的判断结果是 true，并且 `ast` 的第一个元素的第一个元素 (即 `ast[0][0]`) 是名为 "splice-unquote" 的符号：返回一个新的列表，其中包含：名为 "concat" 的符号，`ast` 的第一个元素的的第二个元素(即 `ast[0][1]`)，以及以 `ast` 的第二个元素到最后一个元素为参数调用 `quasiquote` 的结果。
@@ -628,17 +628,17 @@ diff -urp ../process/step8_macros.txt ../process/step9_try.txt
   * `apply`: 接受至少两个参数。第一个参数是一个函数，最后一个参数的是列表（或向量）。在函数和最后一个参数（如果有的话）之间的参数与最后一个参数连接起来，创建参数被用来调用函数。这个 apply 函数允许一个函数的参数被包含在一个列表（或）向量中。换句话说，`(apply F A B [C D])` 就相当于 `(F A B C D)`。  
   * `map`: 接受一个函数和一个列表，并对列表（或向量）中的每一个元素求值，并将结果返回为一个列表。
 * 添加一些类型断言函数。在 Lisp 中，断言函数通常以以 "?" 或者 "p" 结尾，返回 true 或 false（或 true 值 / nil）。
-  * `nil?`: 接受一个参数，如果参数是 nil(mal 中的 nil 值)的话返回 true(mal 中的 true 值)。
-  * `true?`: 接受一个参数，如果参数是 true(mal 中的 true 值)的话，返回 true(mal 中的 true 值)。
-  * `false?`: 接受一个参数，如果参数是 false(mal 中的 false 值)的话，返回 true(mal 中的 true 值)。
-  * `symbol?`: 接受一个参数，如果参数是 symbol(mal 中的 symbol)的话，返回 true(mal 中的 true 值)。
+  * `nil?`: 接受一个参数，如果参数是 nil(mal 中的 nil 值)的话返回 true (mal 中的 true 值)。
+  * `true?`: 接受一个参数，如果参数是 true(mal 中的 true 值)的话，返回 true (mal 中的 true 值)。
+  * `false?`: 接受一个参数，如果参数是 false(mal 中的 false 值)的话，返回 true (mal 中的 true 值)。
+  * `symbol?`: 接受一个参数，如果参数是 symbol(mal 中的 symbol)的话，返回 true (mal 中的 true 值)。
 
 现在回到顶层目录，运行步骤 9 的测试：
 
 ```
 make "test^quux^step9"
 ```
-你的 mal 实现现在大体上已经是一个功能完善的 Lisp 解释器了。但是如果你止步于此，就会错过创造一个 mal 实现中最激动人心和富有启发性的部分：self-hosting。
+你的 mal 实现现在大体上已经是一个功能完善的 Lisp 解释器了。但是如果你止步于此，就会错过创造一个 mal 实现中最激动人心和富有启发性的部分：自足执行 self-hosting。
 
 #### 可推迟的任务
 * 增加如下新的核心函数:
