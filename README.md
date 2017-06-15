@@ -572,13 +572,13 @@ diff -urp ../process/step7_quote.txt ../process/step8_macros.txt
 ```
 
 * 将 `step7_quote.qx` 复制为 `step8_macros.qx`
-你可能认为，marco 的无限力量大概需要实现某种复杂的机制。然而，实现其实非常简单。
+你可能认为，宏的无限力量可能需要实现某种复杂的机制。然而，其实实现起来非常简单。
 
 * 为 mal 函数类型添加一个新的属性 `is_macro`，这个属性默认是 false
 * 添加一个新形式 `defmacro!`。它与 `def!` 形式非常类似，但是在将 mal 函数加入到环境中之前，将 `is_macro` 属性设置为 true
 * 添加一个 `is_macro_call` 函数：这个函数接受两个参数 `ast` 和 `env`。当 `ast` 列表第一个元素是个符号，并且这个符号指向 `env` 环境中的一个 `is_macro` 属性为 true 函数时，返回 true，否则返回 false。
-* 添加一个 `macroexpand` 函数：这个函数接受两个参数 `ast` 和 `env`。它调用 `is_macro_call` 函数，传入参数 `ast` 和 `env`，并且在条件为 true 时进行循环。在循环中，`ast` 列表中的第一个元素 (一个符号) 在环境中查找 macro 函数。这个 macro 函数随后会以 `ast` 余下的元素（第二个到最后一个）作为参数被调用 / 应用。macro 调用的的返回值将成为 `ast` 的新值。当循环因为 `ast`#tbd 一个 macro 调用，`ast` 的当前值会被返回。
-* 在求值器中(`EVAL`)#tbd
+* 添加一个 `macroexpand` 函数：这个函数接受两个参数 `ast` 和 `env`。它调用 `is_macro_call` 函数，传入参数 `ast` 和 `env`，并且在条件为 true 时进行循环。在循环中，`ast` 列表中的第一个元素 (一个符号) 在环境中查找 macro 函数。这个宏函数随后会以 `ast` 余下的元素（第二个到最后一个）作为参数被调用/应用。宏调用的的返回值将成为 `ast` 的新值。当 `ast` 不再是一个宏调用时，循环结束，当前 `ast` 的值会被返回。
+* 在求值器 (`EVAL`) 中，在。将 `ast` 设置为调用的结果。如果 `ast` 的新值不再是一个列表 after macro expantion，那么任何对它调用 `eval_ast` 的结果，否则继续剩下的 apply 部分(特殊形式的条件判断)。
 * 为 `macroexpand ` 添加一个新的特殊形式。以 `ast` 的第一个参数（第二个列表元素）和 `env` 作为参数调用 `macroexpand`。返回结果。这个特殊形式允许 mal 程序在不应用结果时进行显式的 macro 扩展（这在调试 macro 扩展时十分有用）
 
 回到目录顶层，执行步骤 8 的测试：
@@ -649,16 +649,8 @@ make "test^quux^step9"
   * `vector?`: 接受一个参数，如果参数是 vector 的话，返回 true(mal 中的 true 值)，否则返回 false(mal 中的 false 值)
   * `hash-map`: 接受偶数数量的参数，返回一个新的 mal hash-map，其中 key 为奇数位置的参数，它们的 value 分别为与之对应的偶数位置的参数，它基本上是 `{}`reader 字面语法的函数形式。
   * `map?`: 接受一个参数，如果参数是 hash-map 的话，返回 true(mal 中的 true 值)，否则返回 false(mal 中的 false 值)
-  * `assoc`: #tbd takes a hash-map as the first argument and the remaining
-    arguments are odd/even key/value pairs to "associate" (merge) into
-    the hash-map. Note that the original hash-map is unchanged
-    (remember, mal values are immutable), and a new hash-map
-    containing the old hash-maps key/values plus the merged key/value
-    arguments is returned.
-  * `dissoc`: takes a hash-map and a list of keys to remove from the
-    hash-map. Again, note that the original hash-map is unchanged and
-    a new hash-map with the keys removed is returned. Key arguments
-    that do not exist in the hash-map are ignored.
+  * `assoc`: 接受一个哈希表作为第一个参数，余下的参数为需要关联(合并)到哈希表里的奇/偶-键/值对。注意，原始的哈希表不会被修改(记住，mal的值是不可变的)，旧哈希表中的键/值与参数中的键/值对合并而成的新的哈希表作为结果返回。
+  * `dissoc`:接受一个哈希表作为第一个参数，余下的参数为需要从哈希表中删除的键。与前面一样，注意原始的哈希表是不变的，只是把删除了参数中指定的键的新哈希表返回出来。参数列表中在原哈希表不存在的键会被忽略。
   * `get`: 接受一个 hash-map 和一个 key，返回 hash-map 中与这个 key 对应的 value，如果 hash-map 中不存在这个 key，则返回 nil。
   * `contains?`: 接受一个 hash-map 和一个 key，如果 hash-map 中包含这个 key，则返回 true(mal 中的 true 值)，否则返回 false(mal 中的 false 值)。
   * `keys`: 接受一个 hash-map，并返回一个 list(mal 中的 list 值)，其中包含了 hash-map 中的所有的 key。
