@@ -1,10 +1,10 @@
 
-本项目是对 [kanaka/mal](https://github.com/kanaka/mal) 这个项目中 [指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md) 的简体中文翻译。这份指南教你如何用某种编程语言实现一个 Lisp 解释器。请使用原项目 [kanaka/mal](https://github.com/kanaka/mal) 进行开发和学习。译文的最新版本维护在仓库 [Windfarer/mal-zh](https://github.com/kanaka/mal-zh)
+本项目是对 [mal](https://github.com/kanaka/mal) 这个项目中 [指南部分](https://github.com/kanaka/mal/blob/master/process/guide.md) 的简体中文翻译。这份指南教你如何用某种编程语言实现一个 Lisp 解释器。请使用原项目 [mal](https://github.com/kanaka/mal) 进行开发和学习。译文的最新版本维护在仓库 [Windfarer/mal-zh](https://github.com/Windfarer/mal-zh)
 
 本译文按照 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh) 进行授权。
 
 This project is a Simplified Chinese translation of [kanaka/mal](https://github.com/kanaka/mal) project's guide. Take a look at 
- the origin repository [kanaka/mal](https://github.com/kanaka/mal) to 
+ the origin repository to 
 get the full version of source code.
 
 ---
