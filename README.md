@@ -9,7 +9,7 @@ get the full version of source code.
 
 ---
 
-# 写一个Lisp解释器的步骤
+# 实现Lisp解释器的步骤
 
 听说你想自己写一个 Lisp 解释器？欢迎入坑！
 
