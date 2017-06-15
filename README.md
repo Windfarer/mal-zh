@@ -136,7 +136,7 @@ StackOverflow 和 Google 是你的好伙伴。如今的多语言开发者不会�
 
 <a name='step-0-the-repl'></a>
 ### 步骤 0: The REPL 读取求值打印循环(Read-Eval-Print Loop)
-![step0_repl](/content/images/2017/03/step0_repl.png)
+![step0_repl](images/step0_repl.png)
 
 这个步骤基本上仅创建了你解释器的框架。
 
@@ -159,7 +159,7 @@ make "test^quux^step0"
 
 <a name='step-1-read-and-print'></a>
 ### 步骤 1: Read and Print 读取和打印
-![step1_read_print](/content/images/2017/03/step1_read_print.png)
+![step1_read_print](images/step1_read_print.png)
 
 这个步骤中，你需要让你的解释器 “读取”(read) 用户输入的字符串，并把它解析为一种内部的树形数据结构（AST，抽象语法树），然后将这个数据结构 “打印”(print) 成字符串。
 
@@ -243,8 +243,9 @@ make "test^quux^step1"
   * 哈希表 (hash-map): 哈希表是一种关系型数据结构，它将字符串映射到其他 mal 类型的值上。如果你将关键字实现为带前缀的的字符串，那么你只需要一种原生的关系数据结构，只要它支持以字符串作为键就可以了。Clojure 支持把任何值作为哈希表的键，但在 mal 的基础功能中只需要支持把字符串作为键即可。因为将哈希表表示为键和值的交替序列，你可能可以用读取列表和向量的 reader 函数来处理哈希表，只需要用参数来标示它的开头和结尾 token 即可。奇数位置的 token 作为键，而偶数位置的 token 作为值。
 * 为你的 reader 增加对注释的支持。tokenizer 应该忽略由 ";" 开头的 token。你的 `reader_str` 函数需要正确的处理 tokenizer 不返回任何值的情况。最简单的办法是返回 `nil` 这个 mal 类型的值。一个更加简明的（在这种情况下不打印 nil）方式是抛出一个特殊的异常，使主循环直接在循环的开头跳过循环，从而不调用 rep。
 
+<a name='step-2-eval'></a>
 ### 步骤 2: Eval 求值
-![step2_eval](/content/images/2017/03/step2_eval.png)
+![step2_eval](images/step2_eval.png)
 
 在步骤 1 中，你的 mal 解释器基本上只有验证输入然后去除输出结果中多余空格的功能。在本步骤中，你将会为你的解释器增加 evaluator (EVAL) 的功能，从而把它改成一个简单的计算器。
 
@@ -299,8 +300,9 @@ make "test^quux^step2"
   * 如果 `ast` 是一个向量: 返回对于向量中的每个元素 `EVAL` 调用得到的结果所组成的向量
   * 如果 `ast` 是一个哈希表: 返回一个新的哈希表，它的键是从原哈希表中来的键，值是对于原哈希表中的键所对应的值调用 `EVAL` 得到的结果。
 
+<a name='step-3-environments'></a>
 ### 步骤 3: Environments 环境
-![step3_env](/content/images/2017/03/step3_env.png)
+![step3_env](images/step3_env.png)
 
 在步骤 2 中我们已经实现了 REPL 环境 (`repl_env`)，在这个环境中可以存储和查找基本的算数运算函数。在本步骤中，你将会为解释器增加创建新环境 (`let*`) 和修改已存在的环境 (`def!`) 的功能。
 
@@ -343,8 +345,9 @@ mal 类型对象作为值，并将它们装入 `data` 结构中
 make "test^quux^step3"
 ```
 
+<a name='step-4-if-fn-do'></a>
 ### 步骤 4: If Fn Do
-![step4_if_fn_do](/content/images/2017/04/step4_if_fn_do.png)
+![step4_if_fn_do](images/step4_if_fn_do.png)
 
 在步骤 3 中，你为解释器增加了环境，和用来操作环境的特殊形式。在本步骤中，你将为 REPL 的默认环境增加三种新的特殊形式 (`if`, `fn*` 和 `do`) 以及几种核心函数。新的结构如下：
 
@@ -403,8 +406,9 @@ make "test^quux^step4"
   * `prn`: 对于每个参数调用 `pr_str`，将 `print_readably` 参数设置为 true，将结果用 " " 连接，把新字符串打印到屏幕上，并返回 `nil`。
   * `println`: 对于每个参数调用 `pr_str`，将 `print_readably` 参数设置为 false，将结果用 " " 连接，把新字符串打印到屏幕上，并返回 `nil`。
 
+<a name='step-5-tail-call-optimization'></a>
 ### 步骤 5: 尾调用优化
-![step5_tco](/content/images/2017/04/step5_tco.png)
+![step5_tco](images/step5_tco.png)
 
 在步骤 4 中，你增加了特殊的形式 `do`, `if` 和 `fn*` 并且定义了一些核心函数。在本步骤中你将实现一个 Lisp 的特性，叫作尾调用优化 (TCO)。也叫“尾递归” 或“尾调用”。
 
@@ -441,8 +445,9 @@ make "test^quux^step5"
 
 祝贺你，你的 mal 实现已经有了大多数主流语言所缺少的（尾调用优化）特性。
 
+<a name='step-6-files-mutation-and-evil'></a>
 步骤 6: Files, Mutation, and Evil
-![step6_file](/content/images/2017/04/step6_file.png)
+![step6_file](images/step6_file.png)
 
 在步骤 5 中，你为解释器加入了尾调用优化。在本步骤中你将加入一些字符串和文件操作的功能，为你的实现增加一些 evil，呃 eval。只要你的语言支持函数闭包，那么本步骤将非常容易。然而，为了完成本步骤，你必须实现字符串类型的支持，所以如果你之前如果推迟了任务还没完成，你需要回去先把那个搞定。
 
@@ -499,9 +504,10 @@ make "test^quux^step6"
 * 增加通过命令行运行其他 mal 程序的能力。在进入 REPL 循环之前，检查你的 mal 实现在被调用的时候有没有带参数，如果有参数的话，将第一个参数视为文件名，使用 `rep` 调用 `load-file` 将文件导入并执行，最后退出 / 终止执行。
 * 将剩下的命令行参数传入 REPL 环境，让通过 `load-file` 函数执行的程序能够访问调用它们的环境。为你的 REPL 环境加入一个 "*ARGV*"(符号)。它的值是命令行余下的参数的一个列表。
 
+<a name='step-7-quoting'></a>
 ### 步骤 7: Quoting
 
-![step7_quote](/content/images/2017/04/step7_quote.png)
+![step7_quote](images/step7_quote.png)
 
 在步骤 7 中，你将为解释器加上 `quote` 和 `quasiquote` 这两个特殊形式，并且加入 `cons` 和 `concat` 这两个核心函数的支持。
 
@@ -559,9 +565,9 @@ Quoting 是 mal 中许多无聊的函数中的一个，但别因此而灰心。�
   * token 是 "~@" (波浪号和 at 符号): 返回一个新列表，包含符号 "splice-unquote"，以及对下一个 form 读取的结果(`read_form`)
 * 增加对 vector 的 quoting 的支持。`is_pair` 函数在参数是非空列表或 vector 时应该返回 true。`cons` 应该也能接受向量作为第二个参数。返回值是 list regardless。`concat` 应该支持列表，向量，或它们两者进行连接，结果永远是列表。
 
-
+<a name='step-8-macros'></a>
 ### 步骤 8: Macros 宏
-![step8_macros](/content/images/2017/04/step8_macros.png)
+![step8_macros](images/step8_macros.png)
 
 现在，你的 mal 实现已经为加入最 lisp 范的、最一颗赛艇的编程概念——macro 宏——做好了准备。在之前的步骤中，quoting 能实现一些简单的数据结构操作，以及我们 mal 代码的一些操作（因为在步骤 6 中，我们的 `eval` 函数能够将 mal 数据结构转换为代码）。在本步骤中，你将实现将一个 mal 函数标记为宏的功能，它可以在求值之前操作 mal 代码。换句话说，宏就是用户自定义的特殊形式。从另一角度看，宏允许 mal 程序重新定义 mal 语言本身。
 
@@ -578,7 +584,7 @@ diff -urp ../process/step7_quote.txt ../process/step8_macros.txt
 * 添加一个 `is_macro_call` 函数：这个函数接受两个参数 `ast` 和 `env`。当 `ast` 列表第一个元素是个符号，并且这个符号指向 `env` 环境中的一个 `is_macro` 属性为 true 函数时，返回 true，否则返回 false。
 * 添加一个 `macroexpand` 函数：这个函数接受两个参数 `ast` 和 `env`。它调用 `is_macro_call` 函数，传入参数 `ast` 和 `env`，并且在条件为 true 时进行循环。在循环中，`ast` 列表中的第一个元素 (一个符号) 在环境中查找 macro 函数。这个宏函数随后会以 `ast` 余下的元素（第二个到最后一个）作为参数被调用/应用。宏调用的的返回值将成为 `ast` 的新值。当 `ast` 不再是一个宏调用时，循环结束，当前 `ast` 的值会被返回。
 * 在求值器 (`EVAL`) 中，在。将 `ast` 设置为调用的结果。如果 `ast` 的新值不再是一个列表 after macro expantion，那么任何对它调用 `eval_ast` 的结果，否则继续剩下的 apply 部分(特殊形式的条件判断)。
-* 为 `macroexpand ` 添加一个新的特殊形式。以 `ast` 的第一个参数（第二个列表元素）和 `env` 作为参数调用 `macroexpand`。返回结果。这个特殊形式允许 mal 程序在不应用结果时进行显式的 macro 扩展（这在调试 macro 扩展时十分有用）
+* 为 `macroexpand ` 添加一个新的特殊形式。以 `ast` 的第一个参数（第二个列表元素）和 `env` 作为参数调用 `macroexpand`。返回结果。这个特殊形式允许 mal 程序在不应用结果时进行显式的宏扩展（这在调试宏扩展时十分有用）
 
 回到目录顶层，执行步骤 8 的测试：
 
@@ -604,8 +610,9 @@ make "test^quux^step8"
   * `cond`: "(defmacro! cond (fn* (& xs) (if (> (count xs) 0) (list'if (first xs) (if (> (count xs) 1) (nth xs 1) (throw \"odd number of forms to cond\")) (cons'cond (rest (rest xs)))))))"
   * `or`: "(defmacro! or (fn* (& xs) (if (empty? xs) nil (if (= 1 (count xs)) (first xs) `(let* (or_FIXME ~(first xs)) (if or_FIXME or_FIXME (or ~@(rest xs))))))))"
 
+<a name='step-9-try'></a>
 ### 步骤 9: Try
-![step9_try](/content/images/2017/04/step9_try.png)
+![step9_try](images/step9_try.png)
 
 在本步骤中，你要实现 mal 的最后一种特殊形式，用来进行异常处理的：try*/catch*. 你也需要为你的实现添加一些核心函数。特别是，你将会为你的实现增加 apply 和 map 核心函数，来加强它的函数式编程的血统。
 
@@ -648,7 +655,7 @@ make "test^quux^step9"
   * `vector?`: 接受一个参数，如果参数是向量的话，返回 true(mal 中的 true 值)，否则返回 false(mal 中的 false 值)
   * `hash-map`: 接受偶数数量的参数，返回一个新的 mal 哈希表，其中键为奇数位置的参数，它们的值分别为与之对应的偶数位置的参数，它基本上是 `{}`reader 字面语法的函数形式。
   * `map?`: 接受一个参数，如果参数是哈希表的话，返回 true(mal 中的 true 值)，否则返回 false(mal 中的 false 值)
-  * `assoc`: 接受一个哈希表作为第一个参数，余下的参数为需要关联(合并)到哈希表里的奇/偶-键/值对。注意，原始的哈希表不会被修改(记住，mal的值是不可变的)，旧哈希表中的键/值与参数中的键/值对合并而成的新的哈希表作为结果返回。
+  * `assoc`: 接受一个哈希表作为第一个参数，余下的参数为需要关联(合并)到哈希表里的奇/偶-键/值对。注意，原始的哈希表不会被修改(记住，mal 的值是不可变的)，旧哈希表中的键/值与参数中的键/值对合并而成的新的哈希表作为结果返回。
   * `dissoc`:接受一个哈希表作为第一个参数，余下的参数为需要从哈希表中删除的键。与前面一样，注意原始的哈希表是不变的，只是把删除了参数中指定的键的新哈希表返回出来。参数列表中在原哈希表不存在的键会被忽略。
   * `get`: 接受一个哈希表和一个键，返回哈希表中与这个键对应的值，如果哈希表中不存在这个键，则返回 nil。
   * `contains?`: 接受一个哈希表和一个键，如果哈希表中包含这个键，则返回 true(mal 中的 true 值)，否则返回 false(mal 中的 false 值)。
@@ -656,11 +663,12 @@ make "test^quux^step9"
   * `vals`: 接受一个哈希表，并返回一个列表(mal 中的 列表值)，其中包含了哈希表中的所有的值。
   * `sequential?`: 接受一个参数，如果参数是列表或者向量的话，返回 true(mal 中的 true 值)，否则返回 false(mal 中的 false 值)
 
+<a name='step-a-metadata-self-hosting-and-interop'></a>
 ### 步骤 A: Metadata, Self-hosting and Interop
 
-![stepA_mal](/content/images/2017/04/stepA_mal.png)
+![stepA_mal](images/stepA_mal.png)
 
-现在你来到了实现 mal 的最后一个步骤。本步骤是对一些无法放入到其他步骤中的任务的一个集合。更重要的是，在本步骤你做的事情，将解锁名为“自足执行”的神秘力量。你可能已经注意到，我们的诸多 mal 实现中其中一个，是用 mal 语言实现的。任何足够完善的 mal 实现都可以运行由 mal 语言实现的 mal。如果你之前从未构建过一个编译器或是解释器的话，你可能需要些时间思考一会。查看 mal 语言实现的 mal 的源码文件（因为你已经到了步骤 A，所以这不算是作弊了）。
+现在你来到了实现 mal 的最后一个步骤。本步骤是对一些无法放入到其他步骤中的任务的集合。更重要的是，在本步骤你做的事情，将解锁名为“自足执行”的神秘力量。你可能已经注意到，我们的诸多 mal 实现中其中一个，是用 mal 语言实现的。任何足够完善的 mal 实现都可以运行由 mal 语言实现的 mal。如果你之前从未构建过一个编译器或是解释器的话，你可能需要些时间思考一会。查看 mal 语言实现的 mal 的源码文件（因为你已经到了步骤 A，所以这不算是作弊了）。
 
 如果你推迟了关键字，向量和哈希表的实现，那么如果你想实现自足执行的话，现在就需要先回去把这些任务完成。
 
@@ -704,7 +712,7 @@ make MAL_IMPL=quux "test^mal"
 
 当你遇到问题时（你几乎肯定要遇到），使用上面说过的方式来进行 debug。
 
-恭喜你！！！当所有测试通过后，你可以停下来并想想你已经完成了什么。你已经实现了一个 Lisp 解释器，它非常强大，并足够完整——可以运行一个大型的 mal 程序，而这个程序是 mal 语言实现的 mal 解释器。你甚至可能会问可否继续使用你的mal实现来运行mal实现，而它自己也是一个mal实现，如同盗梦空间一样。
+恭喜你！！！当所有测试通过后，你可以停下来并想想你已经完成了什么。你已经实现了一个 Lisp 解释器，它非常强大，并足够完整——可以运行一个大型的 mal 程序，而这个程序是 mal 语言实现的 mal 解释器。你甚至可能会问可否继续使用你的 mal 实现来运行 mal 实现，而它自己也是一个 mal 实现，如同盗梦空间一样。
 
 #### 可选的任务: gensym
 
