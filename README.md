@@ -608,6 +608,7 @@ make "test^quux^step8"
 * 在主程序中，使用 `rep` 函数定义两个新的控制结构宏，下面是调用 `rep` 定义这些宏时用到的字符串参数:
 
   * `cond`: "(defmacro! cond (fn* (& xs) (if (> (count xs) 0) (list'if (first xs) (if (> (count xs) 1) (nth xs 1) (throw \"odd number of forms to cond\")) (cons'cond (rest (rest xs)))))))"
+    * 注意，`cond` 在 `cond` 为奇数个参数时调用了 `throw` 函数。 `throw` 函数将会在下一步中进行实现，但它仍要引发一个未定义符号错误来表明它的意图。
   * `or`: "(defmacro! or (fn* (& xs) (if (empty? xs) nil (if (= 1 (count xs)) (first xs) `(let* (or_FIXME ~(first xs)) (if or_FIXME or_FIXME (or ~@(rest xs))))))))"
 
 <a name='step-9-try'></a>
@@ -680,7 +681,9 @@ diff -urp ../process/step9_try.txt ../process/stepA_mal.txt
 
 * 将 `step9_try.qx` 复制为 `stepA_mal.qx`
 * 添加 `readline` 核心函数。这个函数接受一个字符串，用来提示用户输入。用户输入的文本作为一个字符串返回。如果用户输入了 EOF(通常是 Ctrl-D)，则返回 nil.
-* 为 mal 函数添加 meta-data 支持。TODO。需要与函数 macro 表示区分开。
+* 通过在mal函数上增加一个 metadata 属性，来为 mal 函数增加 meta-data 支持。这个属性引用了另一个 val 值/类型 (默认是nil)。添加下列与 metadata 相关的核心函数：
+  * `meta`: 它以一个 mal 函数作为参数，返回 metadata 属性的值。
+  * `with-meta`: 这个函数接受两个参数，第一个参数是一个 mal 函数，第二个参数为要设置为 metadata 的mal 值/类型。本函数将返回第一个参数函数的拷贝，且它的 `meta` 属性设置为第二个参数。注意环境和宏属性在拷贝的时候要同样保留下来。
 * 为你的 REPL 环境添加一个新的 "\*host-language\*"(symbol)入口。这个入口的值包含了当前实现的名字。
 * 当 REPL 启动时（区别于使用脚本和参数调用启动时），调用 `rep` 函数，打印下列字符串启动信息: "(println (str"Mal ["\*host-language*"]"))"
 
@@ -730,7 +733,7 @@ make MAL_IMPL=quux "test^mal"
 如果你想了解更多，请阅读这一篇[Peter Seibel's thorough discussion about gensym and leaking macros in Common Lisp](http://www.gigamonkeys.com/book/macros-defining-your-own.html#plugging-the-leaks)
 
 #### 可选的任务
-* 为 mal 函数添加 metadata 支持，其他符合数据类型，以及原生函数。
+* 为其他的复合数据类型 (list, vector和hash-map)以及原生函数添加 metadata 支持
 * 添加如下新的核心函数：
   * `time-ms`: 不需要参数，返回从 epoch(1970 年 1 月 1 日 00:00:00 UTC)到当前时间之间的毫秒数。如果不能的话，就返回从某一特定时间点到当前时间之间的毫秒数。(`time-ms` 通常被用来进行比较，以衡量持续时间）。在实现 `time-ms` 之后，你可以运行 `make perf^quux` 来对你的 mal 实现进行性能 benchmark。
   * `conj`: 接受一个或更多元素的集合作为参数，返回包含原有集合中的元素以及新元素的集合。如果集合是一个列表，则新元素以逆序插入到列表的前面并返回新列表；如果集合是向量，则新元素被加入到给定的向量的尾部，并返回新向量。
@@ -739,9 +742,21 @@ make MAL_IMPL=quux "test^mal"
 * 为了实现对目标语言的互操作(interop)，添加如下核心函数:
   * `quux-eval`: 接受一个字符串，在目标语言中进行求值，并将返回值转换为相应的 mal 类型并返回。你也可以添加一些其他你觉得合适的互操作函数；比如 Clojure，有一个名为 `.` 的函数，允许调用 Java 的方法。如果目标语言是静态类型语言，尝试使用 FFI 或者一些因语言而异的反射机制。`quux-eval` 和其他的互操作函数的测试应该添加到 `quux/tests/stepA_mal.mal` 中。（例子请见[`lua-eval` 的测试](https://github.com/kanaka/mal/blob/master/lua/tests/stepA_mal.mal)）
 
-### TODO:
-
-* simplify: "X argument (list element Y)" -> ast[Y]
-* list of types with metadata: mal functions (required for self-hosting), list, vector, hash-map, native functions (optional for self-hosting).
-* more clarity about when to peek and poke in read_list and read_form
-* tokenizer: use first group rather than whole match (to eliminate whitespace/commas)
+### 下一步
+* 加入 #mal IRC 频道。那里其实挺安静的，但有时候会有一些与mal，Lisp或一些深奥的编程语言相关的讨论。
+* 如果你高了一个新目标语言的实现（或是一个现有实现的唯一且有趣变种），可以考虑向 mal 项目提交 pull request。[FAQ](https://github.com/kanaka/mal/blob/master/docs/FAQ.md#will-you-add-my-new-implementation) 解释了一个实现被合并到仓库中的通常要求。
+* 让你的解释器实现生成目标语言的源代码，而不是马上执行它。换句话说，做一个编译器。
+* 选一个新的目标语言，用它实现一个 mal。选一个与你所掌握的语言差异较大的语言。
+* 用你的 mal 实现去做一个现实世界的项目。可以考虑实现如下的项目：
+  * Web server （以 mal 作为 CGI 语言实现功能扩展）
+  * IRC/Slack 聊天机器人
+  * 编辑器（用 GUI 或者 curses），以 mal 作为脚本/扩展语言
+  * 象棋或者围棋的AI
+* 实现一些本指南中未提到的功能，一些参考：
+  * 命名空间 (Namespaces)
+  * 多线程支持
+  * 带有行号或堆栈信息的报错
+  * 惰性序列
+  * Clojure-style 的协议
+  * 完整的 call/cc (call-with-current-continuation) 支持
+  * 显式的 TCO (例如`recur`) 带有尾部错误检查
