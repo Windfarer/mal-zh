@@ -370,7 +370,7 @@ diff -urp ../process/step3_env.txt ../process/step4_if_fn_do.txt
     * 创建一个新的环境，以 env (外层作用域) 作为 `outer` 参数，第一个参数（即外层作用域的 `ast` 的第二个列表元素）作为 `binds` 参数，闭包的参数作为 `exprs` 的参数。
     * 对于第二个参数（即外层作用域的 `ast` 的第三个列表元素）调用 `EVAL`，使用新的环境。将结果作为闭包的返回值。
 
-如果你的目标语言不支持闭包，那么你需要使用某种在关闭时可以保存值的结构或者对象保存如下的东西：`ast` 列表的第一个和第二个参数（函数参数列表和函数体），以及当前环境 `env`。在这种情况下，你的原生函数需要用相同的方式被封装。你可能也需要在 `EVAL` 的 apply 部分有一个用来调用对象/结构的函数/方法。
+如果你的目标语言不支持闭包，那么你需要使用某种在关闭时可以保存值的结构或者对象保存如下的东西：`ast` 列表的第一个和第二个参数（函数参数列表和函数体），以及当前环境 `env`。在这种情况下，你的原生函数需要用相同的方式进行封装。可能你也需要在 `EVAL` 的 apply 部分有一个用来调用对象/结构的函数/方法。
 
 测试你已经实现的基础部分：
 
@@ -733,7 +733,7 @@ make MAL_IMPL=quux "test^mal"
 如果你想了解更多，请阅读这一篇[Peter Seibel's thorough discussion about gensym and leaking macros in Common Lisp](http://www.gigamonkeys.com/book/macros-defining-your-own.html#plugging-the-leaks)
 
 #### 可选的任务
-* 为其他的复合数据类型 (list, vector和hash-map)以及原生函数添加 metadata 支持
+* 为其他的复合数据类型 (list, vector和hash-map) 以及原生函数添加 metadata 支持
 * 添加如下新的核心函数：
   * `time-ms`: 不需要参数，返回从 epoch(1970 年 1 月 1 日 00:00:00 UTC)到当前时间之间的毫秒数。如果不能的话，就返回从某一特定时间点到当前时间之间的毫秒数。(`time-ms` 通常被用来进行比较，以衡量持续时间）。在实现 `time-ms` 之后，你可以运行 `make perf^quux` 来对你的 mal 实现进行性能 benchmark。
   * `conj`: 接受一个或更多元素的集合作为参数，返回包含原有集合中的元素以及新元素的集合。如果集合是一个列表，则新元素以逆序插入到列表的前面并返回新列表；如果集合是向量，则新元素被加入到给定的向量的尾部，并返回新向量。
@@ -743,8 +743,8 @@ make MAL_IMPL=quux "test^mal"
   * `quux-eval`: 接受一个字符串，在目标语言中进行求值，并将返回值转换为相应的 mal 类型并返回。你也可以添加一些其他你觉得合适的互操作函数；比如 Clojure，有一个名为 `.` 的函数，允许调用 Java 的方法。如果目标语言是静态类型语言，尝试使用 FFI 或者一些因语言而异的反射机制。`quux-eval` 和其他的互操作函数的测试应该添加到 `quux/tests/stepA_mal.mal` 中。（例子请见[`lua-eval` 的测试](https://github.com/kanaka/mal/blob/master/lua/tests/stepA_mal.mal)）
 
 ### 下一步
-* 加入 #mal IRC 频道。那里其实挺安静的，但有时候会有一些与mal，Lisp或一些深奥的编程语言相关的讨论。
-* 如果你高了一个新目标语言的实现（或是一个现有实现的唯一且有趣变种），可以考虑向 mal 项目提交 pull request。[FAQ](https://github.com/kanaka/mal/blob/master/docs/FAQ.md#will-you-add-my-new-implementation) 解释了一个实现被合并到仓库中的通常要求。
+* 加入 #mal IRC 频道。那里其实挺安静的，但有时候会有与mal，Lisp或一些深奥的编程语言相关的讨论。
+* 如果你搞了一个新目标语言的实现（或是现有实现的唯一且有趣的变种），可以考虑向 mal 项目提交 Pull Request。[FAQ](https://github.com/kanaka/mal/blob/master/docs/FAQ.md#will-you-add-my-new-implementation) 解释了一个实现能够被合并到仓库中的通常要求。
 * 让你的解释器实现生成目标语言的源代码，而不是马上执行它。换句话说，做一个编译器。
 * 选一个新的目标语言，用它实现一个 mal。选一个与你所掌握的语言差异较大的语言。
 * 用你的 mal 实现去做一个现实世界的项目。可以考虑实现如下的项目：
