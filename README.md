@@ -206,7 +206,7 @@ make "test^quux^step0"
 * 在 `reader.qx` 文件中增加一个 `read_form` 函数，这个函数要读取 Reader 对象的第一个 token，然后对第一个字符做条件判断。如果第一个字符是左括号，则使用 `read_list` 函数处理这个 Reader 对象。否则使用 `read_atom` 函数处理 Reader 对象。`read_form` 的返回值是一个 mal 数据类型。如果你的目标语言是静态类型语言，那么你要想办法让 `read_form` 函数能够返回出不同的类型或者子类型。举例来说，如果你用的是一门面向对象的语言，那么你可以在最顶层中定义 MalType(在 types.qx 中)，随后你的其他 mal 数据结构就可以继承它了。 MalList 类型（也是继承自 MalType）将由一个包含其他 MalType 对象的数组/列表构成。如果你用的语言是动态类型的，那么只需要返回一个包含其他 MalType 对象的数组/列表即可
 * 在 `reader.qx` 中新增一个 `read_list` 函数。这个函数将对 Reader 对象反复调用 `read_form` 函数，直到遇到个 ')' 字符(如果在')' 之前遇到了 EOF，那就说明出错了)。它把调用结果收集到一个 List 类型中。如果你的语言中不存在能够存储多个 mal 数据类型的值的顺序数据类型，那么你需要自己实现一个（在 `types.qx` 中实现）。注意 `read_list` 函数反复调用的是 `read_form`，而不是 `read_atom` 函数。这种在 `read_list` 与 `read_form` 之间的递归定义可以能够让列表中包含列表。 
 * 在 `reader.qx` 中新增一个 `read_atom` 函数。函数将会解析 token 的内容，并返回合适的纯（简单，非复合的）数据类型。最开始，你可以只实现数字类型（整型 integer）和 symbol。这能使你继续后面的一些步骤，在随后再继续实现其他的一些类型: nil, true, false 和 string。这些保留的 mal 类型: 关键字(keyword), 向量(vector), 哈希表(hash-map) 和 原子(atom) 在步骤 9 之前都不需要实现（但可以在本步骤到步骤 9 之间的任意时间点实现）。还有，符号(symbol) 类型只是一个由单独的字符串名字构成的对象（有些语言已经有 symbol 类型了）。
-* 创建一个名为 `printer.qx` 的文件。这个文件包含一个叫 `pr_str` 的函数，它的功能与 `read_str` 正好相反：输入一个 mal 数据结构，返回出它的字符串形式。但是 `pr_str` 的功能很简单，它只是对于输入对象的一个 switch 条件f语句：
+* 创建一个名为 `printer.qx` 的文件。这个文件包含一个叫 `pr_str` 的函数，它的功能与 `read_str` 正好相反：输入一个 mal 数据结构，返回出它的字符串形式。但是 `pr_str` 的功能很简单，它只是对于输入对象的一个 switch 条件语句：
   * symbol: 返回 symbol 的字符串名字
   * number: 将数字作为一个字符串返回
   * list: 对于列表中的每一个元素调用 `pr_str`，然后将结果使用空格分隔，把它们拼接在一起，最后在最外面加上括号
