@@ -453,7 +453,7 @@ make "test^quux^step5"
 祝贺你，你的 mal 实现已经有了大多数主流语言所缺少的（尾调用优化）特性。
 
 <a name='step-6-files-mutation-and-evil'></a>
-步骤 6: Files, Mutation, and Evil
+### 步骤 6: Files, Mutation, and Evil
 ![step6_file](images/step6_file.png)
 
 在步骤 5 中，你为解释器加入了尾调用优化。在本步骤中你将加入一些字符串和文件操作的功能，为你的实现增加一些 evil，呃 eval。只要你的语言支持函数闭包，那么本步骤将非常容易。然而，为了完成本步骤，你必须实现字符串类型的支持，所以如果你之前如果推迟了任务还没完成，你需要回去先把那个搞定。
