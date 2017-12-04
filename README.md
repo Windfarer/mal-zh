@@ -428,7 +428,7 @@ diff -urp ../process/step4_if_fn_do.txt ../process/step5_tco.txt
 ```
 
 * 将 `step4_if_fn_do.qx` 复制为 `step5_tco.qx`
-* 为 EVAL 的所有代码增加一个循环（如 while true）
+* 在 EVAL 所有代码的外层增加一个循环（如 while true）
 * 修改下列的形式，增加对尾调用递归支持：
   * `let*`: 移除最后对 `ast` 第二个参数（即第三个列表元素）的 `EVAL` 调用，将 `env`（换句话说，即作为 `EVAL` 第二个参数传入的局部变量）设置为 `ast` 的第二个参数。回到循环开头继续执行（不返回）。
   * `do`: 修改 `eval_ast` 调用，让它求值所有的参数，除了最后一个参数（第二个列表元素以及后续的元素，但不包括最后一个元素）将 `ast` 设置为 `ast` 最后一个元素。回到循环开头继续执行（`env` 保持不变）
