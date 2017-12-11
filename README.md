@@ -475,7 +475,7 @@ diff -urp ../process/step5_tco.txt ../process/step6_file.txt
 (eval mal-prog)
 ```
 
-* 使用 mal 语言自身，定义一个 `load-file` 函数，在你的主程序里调用 `rep` 函数，参数为 "(def! load-file (fn* (f) (eval (read-string (str"(do" (slurp f) ")")))))"
+* 使用 mal 语言自身，定义一个 `load-file` 函数，在你的主程序里调用 `rep` 函数，参数为 "(def! load-file (fn* (f) (eval (read-string (str "(do " (slurp f) ")")))))"
 
 测试一下 `load-file`:
 
@@ -509,7 +509,7 @@ make "test^quux^step6"
 
 可推迟的任务：
 * 增加通过命令行运行其他 mal 程序的能力。在进入 REPL 循环之前，检查你的 mal 实现在被调用的时候有没有带参数，如果有参数的话，将第一个参数视为文件名，使用 `rep` 调用 `load-file` 将文件导入并执行，最后退出 / 终止执行。
-* 将剩下的命令行参数传入 REPL 环境，让通过 `load-file` 函数执行的程序能够访问调用它们的环境。为你的 REPL 环境加入一个 "*ARGV*"(符号)。它的值是命令行余下的参数的一个列表。
+* 将剩下的命令行参数传入 REPL 环境，让通过 `load-file` 函数执行的程序能够访问调用它们的环境。为你的 REPL 环境加入一个 "\*ARGV\*"(符号)。它的值是命令行余下的参数的一个列表。
 
 <a name='step-7-quoting'></a>
 ### 步骤 7: Quoting
