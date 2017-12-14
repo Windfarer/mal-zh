@@ -553,7 +553,7 @@ diff -urp ../process/step6_file.txt ../process/step7_quote.txt
   1. 如果 `is_pair` 对于 `ast` 的判断结果是 false: 返回一个新列表，里面包括了一个名为 "quote" 的符号，以及 `ast`。
   2. 否则，如果 `ast` 的第一个元素是符号 "unquote": 返回 `ast` 的第二个元素。
   3. 如果 `is_pair` 对于 `ast` 的判断结果是 true，并且 `ast` 的第一个元素的第一个元素 (即 `ast[0][0]`) 是名为 "splice-unquote" 的符号：返回一个新的列表，其中包含：名为 "concat" 的符号，`ast` 的第一个元素的的第二个元素(即 `ast[0][1]`)，以及以 `ast` 的第二个元素到最后一个元素为参数调用 `quasiquote` 的结果。
-  4. 否则: 返回一个新的列表，包括：名为 "cons" 的符号，以 `ast` 的第一个参数(即 `ast[0]`)，和以 `ast` 的第二个元素到最后一个元素为参数调用 `quasiquote` 的结果。
+  4. 否则: 返回一个新的列表，包括：名为 "cons" 的符号，以 `ast` 的第一个参数(即 `ast[0]`)为参数调用 `quasiquote` 的结果，以及以 `ast` 的第二个元素到最后一个元素为参数调用 `quasiquote` 的结果。
 
 返回目录顶层，执行步骤 7 的测试。
 
