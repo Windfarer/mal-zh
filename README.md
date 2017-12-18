@@ -590,8 +590,8 @@ diff -urp ../process/step7_quote.txt ../process/step8_macros.txt
 * 添加一个新形式 `defmacro!`。它与 `def!` 形式非常类似，但是在将 mal 函数加入到环境中之前，将 `is_macro` 属性设置为 true
 * 添加一个 `is_macro_call` 函数：这个函数接受两个参数 `ast` 和 `env`。当 `ast` 列表第一个元素是个符号，并且这个符号指向 `env` 环境中的一个 `is_macro` 属性为 true 函数时，返回 true，否则返回 false。
 * 添加一个 `macroexpand` 函数：这个函数接受两个参数 `ast` 和 `env`。它调用 `is_macro_call` 函数，传入参数 `ast` 和 `env`，并且在条件为 true 时进行循环。在循环中，`ast` 列表中的第一个元素 (一个符号) 在环境中查找 macro 函数。这个宏函数随后会以 `ast` 余下的元素（第二个到最后一个）作为参数被调用/应用。宏调用的的返回值将成为 `ast` 的新值。当 `ast` 不再是一个宏调用时，循环结束，当前 `ast` 的值会被返回。
-* 在求值器 (`EVAL`) 中，在。将 `ast` 设置为调用的结果。如果 `ast` 的新值不再是一个列表 after macro expantion，那么任何对它调用 `eval_ast` 的结果，否则继续剩下的 apply 部分(特殊形式的条件判断)。
-* 为 `macroexpand ` 添加一个新的特殊形式。以 `ast` 的第一个参数（第二个列表元素）和 `env` 作为参数调用 `macroexpand`。返回结果。这个特殊形式允许 mal 程序在不应用结果时进行显式的宏扩展（这在调试宏扩展时十分有用）
+* 在求值器 (`EVAL`) 的特殊形式分支之前 (即apply部分之前)，通过以当前的 `ast` 和 `env` 为参数调用 `macroexpand` 函数，从而进行宏展开。将调用的结果设置给 `ast`。如果 `ast` 的新值在宏展开之后不再是一个列表，那么返回对它调用 `eval_ast` 的结果，否则继续剩下的 apply 部分(特殊形式的条件判断)。
+* 添加一个新的特殊形式`macroexpand `。以 `ast` 的第一个参数（第二个列表元素）和 `env` 作为参数调用 `macroexpand`，并将得到的结果返回。这个特殊形式允许 mal 程序进行显式的宏展开而不对结果进行apply（这在调试宏展开时十分有用）
 
 回到目录顶层，执行步骤 8 的测试：
 
