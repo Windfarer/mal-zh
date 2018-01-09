@@ -408,8 +408,8 @@ make "test^quux^step4"
 * 实现 Clojure 风格的可变函数参数。修改环境的构造器/初始化器，在 `binds` 列表中遇到 "&" 符号的时候，列表中这个 "&" 符号后面的元素将绑定到 "exprs" 列表中余下的还未绑定的部分上。
 * 定义一个 `not` 函数，给 mal 自己用。在 `step4_if_fn_do.qx` 中以 "(def! not (fn* (a) (if a false true)))" 为参数调用 `rep` 函数。
 * 在 `core.qx` 中实现字符串函数。你需要为 reader 和 printer 实现字符串支持（步骤 1 中的可推迟的步骤）。每一个字符串函数接受若干个 mal 类型的值，打印它们 (`pr_str`) 并将它们组装成一个新的字符串。
-  * `pr-str`：对于每个参数调用 `pr_str`，将 `print_readably` 参数设置为 true，用 " "(空格字符)把结果连接起来，返回字符串。
-  * `str`: 对于每个参数调用 `pr_str`，将 `print_readably` 参数设置为 false，用 " " 把结果连接起来，返回新字符串。
+  * `pr-str`：对于每个参数调用 `pr_str`，将 `print_readably` 参数设置为 true，用 " "把结果连接起来，返回字符串。
+  * `str`: 对于每个参数调用 `pr_str`，将 `print_readably` 参数设置为 false，用 "" (空字符) 把结果连接起来，返回新字符串。
   * `prn`: 对于每个参数调用 `pr_str`，将 `print_readably` 参数设置为 true，用 " " 把结果连接起来，把新字符串打印到屏幕上，并返回 `nil`。
   * `println`: 对于每个参数调用 `pr_str`，将 `print_readably` 参数设置为 false，用 " " 把结果连接起来，把新字符串打印到屏幕上，并返回 `nil`。
 
