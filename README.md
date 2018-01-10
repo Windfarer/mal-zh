@@ -570,7 +570,7 @@ Quoting 是 mal 中许多无聊的函数中的一个，但别因此而灰心。�
   * token 是 "\`" (反引号): 返回一个新列表，包含符号 "quasiquote"，以及对下一个 form 读取的结果(`read_form`)
   * token 是 "~" (波浪号): 返回一个新列表，包含符号 "unquote"，以及对下一个 form 读取的结果(`read_form`)
   * token 是 "~@" (波浪号和 at 符号): 返回一个新列表，包含符号 "splice-unquote"，以及对下一个 form 读取的结果(`read_form`)
-* 增加对 vector 的 quoting 的支持。`is_pair` 函数在参数是非空列表或 vector 时应该返回 true。`cons` 应该也能接受向量作为第二个参数。返回值是 list regardless。`concat` 应该支持列表，向量，或它们两者进行连接，结果永远是列表。
+* 增加对 vector 的 quoting 的支持。`is_pair` 函数在参数是非空列表或非空向量时应该返回 true。`cons` 应该也能接受向量作为第二个参数。但返回值总是列表。`concat` 应该支持列表、向量，对它们两者进行连接，结果永远是列表。
 
 <a name='step-8-macros'></a>
 ### 步骤 8: Macros 宏
