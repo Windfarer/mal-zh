@@ -479,7 +479,7 @@ diff -urp ../process/step5_tco.txt ../process/step6_file.txt
 
 测试一下 `load-file`:
 
-* `(load-file"../tests/incA.mal")` -> `9`
+* `(load-file "../tests/incA.mal")` -> `9`
 * `(inc4 3)` -> `7`
 
 `load-file` 函数做了如下的事情：
@@ -692,7 +692,7 @@ diff -urp ../process/step9_try.txt ../process/stepA_mal.txt
   * `meta`: 它以一个 mal 函数作为参数，返回 metadata 属性的值。
   * `with-meta`: 这个函数接受两个参数，第一个参数是一个 mal 函数，第二个参数为要设置为 metadata 的mal 值/类型。本函数将返回第一个参数函数的拷贝，且它的 `meta` 属性设置为第二个参数。注意环境和宏属性在拷贝的时候要同样保留下来。
 * 为你的 REPL 环境添加一个新的 "\*host-language\*"(symbol)入口。这个入口的值包含了当前实现的名字。
-* 当 REPL 启动时（区别于使用脚本和参数调用启动时），调用 `rep` 函数，打印下列字符串启动信息: "(println (str"Mal ["\*host-language*"]"))"
+* 当 REPL 启动时（区别于使用脚本和参数调用启动时），调用 `rep` 函数，打印下列字符串启动信息: "(println (str "Mal ["\*host-language*"]"))"
 
 现在，回到目录顶层，运行步骤 A 的测试:
 
