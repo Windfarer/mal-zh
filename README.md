@@ -189,7 +189,7 @@ make "test^quux^step0"
 * 复制 `step0_repl.qx` 并重命名为 `step1_read_print.qx`。
 * 新建一个 `reader.qx` 文件来保存与 reader 有关的函数。
 * 如果你的目标语言有面向对象 (OOP) 的特性，那么下一步是在 `reader.qx` 中创建一个简单的有状态的 Reader 对象。这个对象用来保存 tokens 和 position。Reader 对象需要有两个方法：`next` 和 `peek`。`next` 返回当前位置 (position) 的 token，并且增大 position。而 `peek` 只是返回当前位置的 token。
-* 在 `reader.qx` 中增加一个 `read_str` 函数。这个函数需要调用 `tokenizer` 获得 token 列表，然后使用这些 token 来创建一个新的 Reader 实例。然后它调用 `read_form` 来处理这个 Reader 实例。
+* 在 `reader.qx` 中增加一个 `read_str` 函数。这个函数需要调用 `tokenize` 获得 token 列表，然后使用这些 token 来创建一个新的 Reader 实例。然后它调用 `read_form` 来处理这个 Reader 实例。
 * 在 `reader.qx` 中增加一个 `tokenize` 函数。这个函数接受一个字符串参数，并且将返回一个数组 / 列表，里面包含了所有的 token(或者叫字符串，string）。下面的正则表达式 (PCRE) 能够匹配所有的 mal 的 token。
 
 ```
