@@ -59,7 +59,9 @@ Michael Fogus 写过关于一些有趣但小众的编程语言的博客，他的
 
 流行的语言中大部分都已经有 mal 的实现了。但这并不应该打消你为一门已经有 mal 的实现的语言写一个你自己版本的实现的积极性。另外，如果你踏上这趟旅程，我建议你不要参考任何已有的实现（也就是“作弊”），这样才能最大化你的学习效果，而不是从我这里借鉴一个。从另一个角度来说，如果你的目标是尽快实现 mal，你 **应该** 去寻找最接近于目标语言的实现，并经常去查阅参考。
 
-如果你想看一看编程语言流行程度的列表，可以看一下这张[编程语言流行程度图表](http://langpop.corger.nl/)。
+如果你想看一看编程语言流行程度的列表，可以看一下 [RedMonk Programming
+Popularity Chart](http://langpop.corger.nl/)	Language
+Rankings](https://redmonk.com/sogrady/2019/03/20/language-rankings-1-19/) 或者 [GitHut 2.0 Project](https://madnight.github.io/githut)。
 
 <a name='getting-started'></a>
 ## 开始
@@ -126,7 +128,7 @@ StackOverflow 和 Google 是你的好伙伴。如今的多语言开发者不会�
 
 ## 参考代码
 
-`process` 目录包含了一些过程中每个步骤的简略伪代码的和架构图。你可以用一个文本比较工具来比较前一个步骤和你当前步骤的伪代码之间的区别。每张架构图中对于上一步所做的变更都以红色高亮表示。这还有一份 [小抄 (cheatsheet)](http://kanaka.github.io/mal/process/cheatsheet.html)，简明扼要地描述了每个步骤的关键变化。
+`process` 目录包含了一些过程中每个步骤的简略伪代码的和架构图。你可以用一个文本比较工具来比较前一个步骤和你当前步骤的伪代码之间的区别。每张架构图中对于上一步所做的变更都以红色高亮表示。这还有一份 [小抄 (cheatsheet)](http://kanaka.github.io/mal/cheatsheet.html)，简明扼要地描述了每个步骤的关键变化。
 
 当你被某个步骤彻底卡住了，并且有了想放弃的念头，那么你应该“作个小弊”，参考一下已经存在的语言的实现对于当前步骤或功能的代码。因为你是来学习的，不是来考试的，所以不要有太强的负罪感。好吧，你最好还是能稍微认识到，这种行为不太好。
 
