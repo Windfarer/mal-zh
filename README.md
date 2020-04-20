@@ -477,7 +477,7 @@ diff -urp ../process/step5_tco.txt ../process/step6_file.txt
 (eval mal-prog)
 ```
 
-* 使用 mal 语言自身，定义一个 `load-file` 函数，在你的主程序里调用 `rep` 函数，参数为 "(def! load-file (fn* (f) (eval (read-string (str "(do " (slurp f) ")")))))"
+* 使用 mal 语言自身，定义一个 `load-file` 函数，在你的主程序里调用 `rep` 函数，参数为 "(def! load-file (fn* (f) (eval (read-string (str "(do " (slurp f) "\nnil)")))))"
 
 测试一下 `load-file`:
 
