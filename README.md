@@ -60,7 +60,7 @@ Michael Fogus 写过关于一些有趣但小众的编程语言的博客，他的
 流行的语言中大部分都已经有 mal 的实现了。但这并不应该打消你为一门已经有 mal 的实现的语言写一个你自己版本的实现的积极性。另外，如果你踏上这趟旅程，我建议你不要参考任何已有的实现（也就是“作弊”），这样才能最大化你的学习效果，而不是从我这里借鉴一个。从另一个角度来说，如果你的目标是尽快实现 mal，你 **应该** 去寻找最接近于目标语言的实现，并经常去查阅参考。
 
 如果你想看一看编程语言流行程度的列表，可以看一下 [RedMonk Programming
-Popularity Chart](http://langpop.corger.nl/)	Language
+Popularity Chart](http://langpop.corger.nl/)、	[Language
 Rankings](https://redmonk.com/sogrady/2019/03/20/language-rankings-1-19/) 或者 [GitHut 2.0 Project](https://madnight.github.io/githut)。
 
 <a name='getting-started'></a>
@@ -386,7 +386,7 @@ diff -urp ../process/step3_env.txt ../process/step4_if_fn_do.txt
 * `(fn* [a] a)` -> `#<function>`
 * `((fn* [a] a) 7)` -> `7`
 * `((fn* [a] (+ a 1)) 10)` -> `11`
-* `((fn* [a b] (+ a b)) 2 3`) -> `5`
+* `((fn* [a b] (+ a b)) 2 3)` -> `5`
 
 * 增加一个新的文件 `core.qx`，并定义一个叫 `ns`(namespace)的关系数据结构，将 symbol 映射为函数。将算数运算函数定义放在这个函数里。
 * 修改 `step4_if_fn_do.qx`，让它读取 `core.ns` 结构，并将每个 symbol / 函数加入 (`set`) 到 REPL 环境中(`repl_env`)。
